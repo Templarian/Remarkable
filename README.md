@@ -23,9 +23,9 @@ Collection of Remarkable themes and templates.
     </td>
   </tr>
   <tr>
-    <td>Gird Dot</td>
-    <td>Gird Iso</td>
-    <td>Gird 2x3 24</td>
+    <td>Grid Dot</td>
+    <td>Grid Iso</td>
+    <td>Grid 2x3 24</td>
   </tr>
 </table>
 
