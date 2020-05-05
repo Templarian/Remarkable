@@ -2,6 +2,10 @@
 
 Collection of Remarkable themes and templates.
 
+- `1404` x `1872` Pixels
+- `10.3"` Diagonal = `6.2"` x `8.2"`
+- `26.2cm` Diagonal = `15.7cm` x `20.9cm`
+
 ## Templates
 
 <table>
