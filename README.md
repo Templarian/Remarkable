@@ -29,7 +29,7 @@ Collection of Remarkable themes and templates.
   <tr>
     <td>Grid Dot</td>
     <td>Grid Iso</td>
-    <td>Grid 2x3 24</td>
+    <td>Grid 2x3 24x24</td>
   </tr>
 </table>
 
