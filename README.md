@@ -82,11 +82,14 @@ Themes consist of various images that can be replaced.
       </a>
     </td>
     <td>
+      <a href="https://github.com/Templarian/Remarkable/blob/master/themes/calvin/restart-crashed.png">
+        <img src="/themes/calvin/thumb-restart-crashed.png"/>
+      </a>
     </td>
   </tr>
   <tr>
     <td>sleeping.png</td>
     <td>starting.png</td>
-    <td></td>
+    <td>restart-crashed.png</td>
   </tr>
 </table>
