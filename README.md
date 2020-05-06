@@ -68,13 +68,16 @@ Collection of Remarkable themes and templates.
       </a>
     </td>
     <td>
+      <a href="https://github.com/Templarian/Remarkable/blob/master/themes/calvin/starting.png">
+        <img src="/themes/calvin/thumb-starting.png"/>
+      </a>
     </td>
     <td>
     </td>
   </tr>
   <tr>
     <td>sleeping.png</td>
-    <td></td>
+    <td>starting.png</td>
     <td></td>
   </tr>
 </table>
