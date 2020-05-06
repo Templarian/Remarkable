@@ -35,8 +35,17 @@ Collection of Remarkable themes and templates.
 
 ## Themes
 
-### Calvin
+Themes consist of various images that can be replaced.
 
+- `batteryempty.png`
+- `poweroff.png`
+- `restart-crash.png`
+- `sleeping.png`
+- `splash.bmp`
+- `starting.png`
+- `suspended.png`
+
+### Calvin
 
 <table>
   <tr>
