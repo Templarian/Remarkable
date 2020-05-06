@@ -61,4 +61,20 @@ Collection of Remarkable themes and templates.
     <td>suspended.png (alt)</td>
     <td>poweroff.png</td>
   </tr>
+  <tr>
+    <td>
+      <a href="https://github.com/Templarian/Remarkable/blob/master/themes/calvin/sleeping.png">
+        <img src="/themes/calvin/thumb-sleeping.png"/>
+      </a>
+    </td>
+    <td>
+    </td>
+    <td>
+    </td>
+  </tr>
+  <tr>
+    <td>sleeping.png</td>
+    <td></td>
+    <td></td>
+  </tr>
 </table>
