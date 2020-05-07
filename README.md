@@ -99,13 +99,19 @@ Themes consist of various images that can be replaced.
       </a>
     </td>
     <td>
+      <a href="https://github.com/Templarian/Remarkable/blob/master/themes/calvin/suspended3.png">
+        <img src="/themes/calvin/thumb-suspended3.png"/>
+      </a>
     </td>
     <td>
+      <a href="https://github.com/Templarian/Remarkable/blob/master/themes/calvin/suspended4.png">
+        <img src="/themes/calvin/thumb-suspended4.png"/>
+      </a>
     </td>
   </tr>
   <tr>
     <td>batteryempty.png</td>
-    <td></td>
-    <td></td>
+    <td>suspended.png (alt)</td>
+    <td>suspended.png (alt)</td>
   </tr>
 </table>
