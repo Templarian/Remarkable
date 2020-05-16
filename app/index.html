@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>reMarkable Template Builder</title>
+  <!-- Judge the code later, just needed the output -->
+  <style>
+    /* noto-serif-regular - latin */
+    @font-face {
+      font-family: 'Noto Serif';
+      font-style: normal;
+      font-weight: 400;
+      src: url('../fonts/noto-serif-v8-latin-regular.eot'); /* IE9 Compat Modes */
+      src: local('Noto Serif'), local('NotoSerif'),
+          url('../fonts/noto-serif-v8-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+          url('../fonts/noto-serif-v8-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+          url('../fonts/noto-serif-v8-latin-regular.woff') format('woff'), /* Modern Browsers */
+          url('../fonts/noto-serif-v8-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+          url('../fonts/noto-serif-v8-latin-regular.svg#NotoSerif') format('svg'); /* Legacy iOS */
+    }
+    /* noto-serif-700 - latin */
+    @font-face {
+      font-family: 'Noto Serif';
+      font-style: normal;
+      font-weight: 700;
+      src: url('../fonts/noto-serif-v8-latin-700.eot'); /* IE9 Compat Modes */
+      src: local('Noto Serif Bold'), local('NotoSerif-Bold'),
+          url('../fonts/noto-serif-v8-latin-700.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+          url('../fonts/noto-serif-v8-latin-700.woff2') format('woff2'), /* Super Modern Browsers */
+          url('../fonts/noto-serif-v8-latin-700.woff') format('woff'), /* Modern Browsers */
+          url('../fonts/noto-serif-v8-latin-700.ttf') format('truetype'), /* Safari, Android, iOS */
+          url('../fonts/noto-serif-v8-latin-700.svg#NotoSerif') format('svg'); /* Legacy iOS */
+    }
+    body {
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-rows: auto;
+      grid-template-columns: 1fr 20rem 1.5rem auto 1fr;
+      font-family: 'Noto Serif', Arial, Helvetica, sans-serif;
+      color: #222;
+    }
+    button {
+      font-family: 'Noto Serif', Arial, Helvetica, sans-serif;
+      font-weight: 400;
+    }
+    aside {
+      grid-column: 2;
+      grid-row: 1;
+      width: 20rem;
+      padding-top: 1rem;
+    }
+    aside > section {
+      box-shadow: 0 0.0125px 0.5rem rgba(0, 0, 0, 0.3);
+      border-radius: 0.25rem;
+      padding: 0.5rem 0;
+    }
+    canvas {
+      grid-column: 4;
+      grid-row: 1;
+      box-shadow: 0 0.0125px 0.5rem rgba(0, 0, 0, 0.3);
+      width: auto;
+      height: calc(100vh - 2rem);
+      margin-top: 1rem;
+    }
+    h1 {
+      margin: 0;
+      padding: 0.75rem 1rem 0.25rem 1rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+    }
+    h1 svg {
+      vertical-align: middle;
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+    h2 {
+      margin: 0;
+      padding: 0.75rem 1rem;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    div.group {
+      display: flex;
+    }
+    div.group button {
+      flex: 1;
+      font-size: 0.875rem;
+      line-height: 2rem;
+      border: 0;
+      outline: 0;
+      background: rgba(36, 36, 36);
+      color: #FFF;
+    }
+    div.group button:not(:last-child) {
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    div.group button:hover {
+      background: rgba(76, 76, 76);
+    }
+    div.group button:active {
+      background: rgb(91, 91, 91);
+      box-shadow: 0 1px 6px rgba(0, 0, 0, 0.75) inset;
+    }
+    div.group button.active:not(:last-child) {
+      background: rgb(230, 230, 230);
+      box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3) inset;
+      color: #555;
+      border-right: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    div.group button.active:last-child {
+      background: rgb(230, 230, 230);
+      box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3) inset;
+      color: #555;
+      border-left: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    div.colors {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+      grid-template-rows: 3rem 3rem;
+    }
+    div.colors svg {
+      width: 24px;
+      height: 24px;
+    }
+    div.colors button {
+      border: 0;
+      outline: 0;
+      padding: 0;
+    }
+    div.colors button:nth-child(1) {
+      grid-row: 1;
+      grid-column: 1;
+      background-color: rgb(230, 230, 230);
+      border: 2px solid rgb(230, 230, 230);
+    }
+    div.colors button:nth-child(2) {
+      grid-row: 1;
+      grid-column: 2;
+      background-color: rgb(211, 211, 211);
+      border: 2px solid rgb(211, 211, 211);
+    }
+    div.colors button:nth-child(3) {
+      grid-row: 1;
+      grid-column: 3;
+      background-color: rgb(200, 200, 200);
+      border: 2px solid rgb(200, 200, 200);
+    }
+    div.colors button:nth-child(4) {
+      grid-row: 1;
+      grid-column: 4;
+      background-color: rgb(190, 190, 190);
+      border: 2px solid rgb(190, 190, 190);
+    }
+    div.colors button:nth-child(5) {
+      grid-row: 1;
+      grid-column: 5;
+      background-color: rgb(171, 171, 171);
+      border: 2px solid rgb(171, 171, 171);
+    }
+    div.colors button:nth-child(6) {
+      grid-row: 2;
+      grid-column: 1;
+      background-color: rgb(91, 91, 91);
+      border: 2px solid rgb(91, 91, 91);
+    }
+    div.colors button:nth-child(7) {
+      grid-row: 2;
+      grid-column: 2;
+      background-color: rgb(76, 76, 76);
+      border: 2px solid rgb(76, 76, 76);
+    }
+    div.colors button:nth-child(8) {
+      grid-row: 2;
+      grid-column: 3;
+      background-color: rgb(52, 52, 52);
+      border: 2px solid rgb(52, 52, 52);
+    }
+    div.colors button:nth-child(9) {
+      grid-row: 2;
+      grid-column: 4;
+      background-color: rgb(36, 36, 36);
+      border: 2px solid rgb(36, 36, 36);
+    }
+    div.colors button:nth-child(10) {
+      grid-row: 2;
+      grid-column: 5;
+      background-color: rgb(17, 17, 17);
+      border: 2px solid rgb(17, 17, 17);
+    }
+    div.colors button::before {
+      content: ' ';
+      display: flex;
+      border: 0.125rem solid transparent;
+      height: calc(100% - 0.25rem);
+    }
+    div.colors button:nth-child(1):hover::before,
+    div.colors button:nth-child(2):hover::before,
+    div.colors button:nth-child(3):hover::before,
+    div.colors button:nth-child(4):hover::before,
+    div.colors button:nth-child(5):hover::before {
+      border: 0.125rem solid rgba(0, 0, 0, 0.5);
+    }
+    div.colors button:nth-child(6):hover::before,
+    div.colors button:nth-child(7):hover::before,
+    div.colors button:nth-child(8):hover::before,
+    div.colors button:nth-child(9):hover::before,
+    div.colors button:nth-child(10):hover::before {
+      border: 0.125rem solid rgba(255, 255, 255, 0.5);
+    }
+    div.colors button:nth-child(1):active::before,
+    div.colors button:nth-child(2):active::before,
+    div.colors button:nth-child(3):active::before,
+    div.colors button:nth-child(4):active::before,
+    div.colors button:nth-child(5):active::before {
+      border: 0.125rem solid rgba(0, 0, 0, 0.75);
+    }
+    div.colors button:nth-child(6):active::before,
+    div.colors button:nth-child(7):active::before,
+    div.colors button:nth-child(8):active::before,
+    div.colors button:nth-child(9):active::before,
+    div.colors button:nth-child(10):active::before {
+      border: 0.125rem solid rgba(255, 255, 255, 0.75);
+    }
+    div.colors svg {
+      align-self: end;
+      justify-self: end;
+      margin: 0.125rem;
+      pointer-events: none;
+      grid-column: 1;
+      grid-row: 1;
+    }
+    /* Range */
+    input[type=range] {
+      -webkit-appearance: none;
+      margin: 0;
+      width: 100%;
+    }
+    input[type=range]:focus {
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 2rem;
+      cursor: pointer;
+      background: rgb(171, 171, 171);
+      border: 0;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      border: 2px solid #000000;
+      height: 1.25rem;
+      width: 1.25rem;
+      border-radius: 50%;
+      background: #ffffff;
+      cursor: pointer;
+      -webkit-appearance: none;
+      margin-top: 0.3125rem;
+    }
+    input[type=range]:focus::-webkit-slider-runnable-track {
+      background: rgb(171, 171, 171);
+    }
+    input[type=range]::-moz-range-track {
+      width: 100%;
+      height: 0.25rem;
+      cursor: pointer;
+      background: rgb(171, 171, 171);
+      border: 0;
+    }
+    input[type=range]::-moz-range-thumb {
+      border: 2px solid #000000;
+      height: 1.25rem;
+      width: 1.25rem;
+      border-radius: 50%;
+      background: #ffffff;
+      cursor: pointer;
+    }
+    .slider {
+      display: grid;
+      grid-template-columns: 2rem auto 3rem;
+      background: rgba(36, 36, 36);
+    }
+    .slider svg {
+      grid-row: 1;
+      grid-column: 1;
+      width: 1.5rem;
+      height: 1.5rem;
+      margin: 0.25rem;
+    }
+    .slider svg path {
+      fill: #FFF;
+    }
+    .slider input[type=range] {
+      grid-row: 1;
+      grid-column: 2;
+    }
+    .slider input[type=text] {
+      grid-row: 1;
+      grid-column: 3;
+      padding: 0;
+      border: 0;
+      text-align: center;
+      font-size: 1rem;
+      background: rgb(36, 36, 36);
+      color: #FFF;
+      outline: 0;
+      border: 2px solid rgb(36, 36, 36);
+    }
+    .slider input[type=text].invalid {
+      border: 2px solid red;
+    }
+    .mb-25 {
+      margin-bottom: 0.25rem;
+    }
+    .toolbar {
+      grid-column: 4;
+      grid-row: 1;
+      width: calc(8.547% + 0.25px);
+      background: rgba(0, 0, 0, 0.1);
+      margin-top: 1rem;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+  <aside>
+    <section>
+      <h1>
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M15.54,3.5L20.5,8.47L19.07,9.88L14.12,4.93L15.54,3.5M3.5,19.78L10,13.31C9.9,13 9.97,12.61 10.23,12.35C10.62,11.96 11.26,11.96 11.65,12.35C12.04,12.75 12.04,13.38 11.65,13.77C11.39,14.03 11,14.1 10.69,14L4.22,20.5L14.83,16.95L18.36,10.59L13.42,5.64L7.05,9.17L3.5,19.78Z" /></svg>
+        reMarkable Templates
+      </h1>
+      <h2>Base</h2>
+      <div class="group">
+        <button id="baseGrid">Grid</button>
+        <button id="baseIsometric">Isometric</button>
+      </div>
+      <h2>Style</h2>
+      <div class="group">
+        <button id="styleLine">Line</button>
+        <button id="styleDots">Dots</button>
+        <button id="styleCross">Cross</button>
+        <button id="styleDashed">Dashed</button>
+      </div>
+      <h2>Cross Size</h2>
+      <div class="slider">
+        <svg width="24" height="24" viewBox="0 0 24 24"><path d="M19,17H21V15H19M19,21H21V19H19M13,3H11V11H3V13H11V21H13V13H21V11H13M15,21H17V19H15M19,5H21V3H19M19,9H21V7H19M17,3H15V5H17M5,3H3V5H5M9,3H7V5H9M3,17H5V15H3M5,7H3V9H5M7,21H9V19H7M3,21H5V19H3V21Z" /></svg>
+        <input id="cross" type="range" min="5" max="20" value="5" />
+        <input id="crossInput" type="text" value="5" />
+      </div>
+      <h2>Weight</h2>
+      <div class="group">
+        <button>1</button>
+        <button>2</button>
+        <button>3</button>
+        <button>4</button>
+        <button>5</button>
+      </div>
+      <h2>Dot Style</h2>
+      <div class="group">
+        <button>Circle</button>
+        <button>Square</button>
+      </div>
+      <h2>Size</h2>
+      <div class="slider">
+        <svg width="24" height="24" viewBox="0 0 24 24"><path d="M15,21H17V19H15M19,21H21V19H19M7,21H9V19H7M11,21H13V19H11M19,17H21V15H19M19,13H21V11H19M3,3V21H5V5H21V3M19,9H21V7H19" /></svg>
+        <input id="size" type="range" min="20" max="80" value="40" />
+        <input id="sizeInput" type="text" value="40" />
+      </div>
+      <h2>Offset</h2>
+      <div class="slider mb-25">
+        <svg width="24" height="24" viewBox="0 0 24 24"><path d="M4,2H2V22H4V13H18.17L12.67,18.5L14.08,19.92L22,12L14.08,4.08L12.67,5.5L18.17,11H4V2Z" /></svg>
+        <input id="offsetX" type="range" min="0" max="100" value="0" />
+        <input id="offsetXInput" type="text" value="0" />
+      </div>
+      <div class="slider">
+        <svg width="24" height="24" viewBox="0 0 24 24"><path d="M22,4V2H2V4H11V18.17L5.5,12.67L4.08,14.08L12,22L19.92,14.08L18.5,12.67L13,18.17V4H22Z" /></svg>
+        <input id="offsetY" type="range" min="0" max="100" value="0" />
+        <input id="offsetYInput" type="text" value="0" />
+      </div>
+      <h2>Colors</h2>
+      <div class="colors">
+        <button id="color1"></button>
+        <button id="color2"></button>
+        <button id="color3"></button>
+        <button id="color4"></button>
+        <button id="color5"></button>
+        <button id="color6"></button>
+        <button id="color7"></button>
+        <button id="color8"></button>
+        <button id="color9"></button>
+        <button id="color10"></button>
+        <svg id="color" viewBox="0 0 24 24"><path fill="currentColor" d="M10,17L5,12L6.41,10.58L10,14.17L17.59,6.58L19,8M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3Z" /></svg>
+      </div>
+    </section>
+  </aside>
+  <canvas width="1404" height="1872"></canvas>
+  <div id="toolbar" class="toolbar"></div>
+  <script>
+    // Enums
+    var COLORS = [
+      'rgb(230, 230, 230)',
+      'rgb(211, 211, 211)',
+      'rgb(200, 200, 200)',
+      'rgb(190, 190, 190)',
+      'rgb(171, 171, 171)',
+      'rgb(91, 91, 91)',
+      'rgb(76, 76, 76)',
+      'rgb(52, 52, 52)',
+      'rgb(36, 36, 36)',
+      'rgb(17, 17, 17)'
+    ]
+    var KEY_COLOR = 'color';
+    var KEY_COLOR_DEFAULT = '9';
+    var KEY_SIZE = 'size';
+    var KEY_SIZE_DEFAULT = '40';
+    var BASE_GRID = 'grid';
+    var BASE_ISOMETRIC = 'isometric';
+    var KEY_BASE = 'base';
+    var KEY_BASE_DEFAULT = BASE_GRID;
+    var STYLE_LINE = 'line';
+    var STYLE_DOTS = 'dots';
+    var STYLE_CROSS = 'cross';
+    var STYLE_DASHED = 'dashed';
+    var KEY_STYLE = 'style';
+    var KEY_STYLE_DEFAULT = STYLE_DOTS;
+    var KEY_OFFSETX_DEFAULT = '0';
+    var KEY_OFFSETY_DEFAULT = '0';
+    var WIDTH = 1404;
+    var HEIGHT = 1872;
+    // State
+    var state = {
+      base: KEY_BASE_DEFAULT,
+      style: KEY_STYLE_DEFAULT,
+      size: KEY_SIZE_DEFAULT,
+      offsetX: KEY_OFFSETX_DEFAULT,
+      offsetY: KEY_OFFSETY_DEFAULT,
+      overlayToolbar: true
+    };
+    // Elements
+    var aside = document.getElementsByTagName('aside')[0];
+    var canvas = document.getElementsByTagName('canvas')[0];
+    const ctx = canvas.getContext('2d');
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      var colorIndex = parseInt(state.color, 10);
+      ctx.fillStyle = COLORS[colorIndex];
+      ctx.strokeStyle = COLORS[colorIndex];
+      ctx.lineWidth = 1;
+      switch (state.base) {
+        case BASE_GRID:
+          switch(state.style) {
+            case STYLE_LINE:
+              for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
+                ctx.fillRect(x * state.size, 0, 2, HEIGHT);
+              }
+              for (var y = 0; y < Math.ceil(HEIGHT / 40); y++) {
+                ctx.fillRect(0, y * state.size, WIDTH, 2);
+              }
+              break;
+            case STYLE_DOTS:
+              for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
+                ctx.setLineDash([5, 3]);/*dashes are 5px and spaces are 3px*/
+                ctx.beginPath();
+                ctx.moveTo(x * state.size, 0);
+                ctx.lineTo(x * state.size, HEIGHT);
+                ctx.stroke();
+              }
+              for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
+                ctx.setLineDash([5, 3]);/*dashes are 5px and spaces are 3px*/
+                ctx.beginPath();
+                ctx.moveTo(0, y * state.size);
+                ctx.lineTo(WIDTH, y * state.size);
+                ctx.stroke();
+              }
+              break;
+              case STYLE_CROSS:
+                for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
+                  ctx.setLineDash([5, state.size - 5]);/*dashes are 5px and spaces are 3px*/
+                  ctx.beginPath();
+                  ctx.moveTo((x * state.size) + 0.5, -2);
+                  ctx.lineTo((x * state.size) + 0.5, HEIGHT);
+                  ctx.stroke();
+                }
+                for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
+                  ctx.setLineDash([5, state.size - 5]);/*dashes are 5px and spaces are 3px*/
+                  ctx.beginPath();
+                  ctx.moveTo(-2, (y * state.size) + 0.5);
+                  ctx.lineTo(WIDTH, (y * state.size) + 0.5);
+                  ctx.stroke();
+                }
+                break;
+              case STYLE_DASHED:
+                for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
+                  ctx.setLineDash([5, 3]);/*dashes are 5px and spaces are 3px*/
+                  ctx.beginPath();
+                  ctx.moveTo(x * state.size, 0);
+                  ctx.lineTo(x * state.size, HEIGHT);
+                  ctx.stroke();
+                }
+                for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
+                  ctx.setLineDash([5, 3]);/*dashes are 5px and spaces are 3px*/
+                  ctx.beginPath();
+                  ctx.moveTo(0, y * state.size);
+                  ctx.lineTo(WIDTH, y * state.size);
+                  ctx.stroke();
+                }
+                break;
+          }
+          break;
+        case BASE_ISOMETRIC:
+
+          break;
+      }
+    }
+    var canvasRect = canvas.getBoundingClientRect();
+    // Colors
+    var color = document.getElementById('color');
+    var colors = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'].map((x) => {
+      return document.getElementById('color' + x);
+    });
+    function selectColor(i) {
+      var x = (i % 5) + 1;
+      var y = Math.floor(i / 5) + 1;
+      color.style.gridColumn = x;
+      color.style.gridRow = y;
+      color.style.color = y === 1 ? '#222' : '#FFF';
+      state.color = i;
+      localStorage.setItem(KEY_COLOR, i);
+      render();
+    }
+    colors.forEach((c, i) => {
+      c.addEventListener('click', () => {
+        selectColor(i);
+      });
+    });
+    // Base
+    var baseGrid = document.getElementById('baseGrid');
+    var baseIsometric = document.getElementById('baseIsometric');
+    function selectBase(name) {
+      baseGrid.classList.toggle('active', name === BASE_GRID);
+      baseIsometric.classList.toggle('active', name === BASE_ISOMETRIC);
+      state.base = name;
+      localStorage.setItem(KEY_BASE, name);
+      render();
+    }
+    baseGrid.addEventListener('click', () => selectBase(BASE_GRID));
+    baseIsometric.addEventListener('click', () => selectBase(BASE_ISOMETRIC));
+    // Style
+    var styleLine = document.getElementById('styleLine');
+    var styleDots = document.getElementById('styleDots');
+    var styleCross = document.getElementById('styleCross');
+    var styleDashed = document.getElementById('styleDashed');
+    function selectStyle(name) {
+      styleLine.classList.toggle('active', name === STYLE_LINE);
+      styleDots.classList.toggle('active', name === STYLE_DOTS);
+      styleCross.classList.toggle('active', name === STYLE_CROSS);
+      styleDashed.classList.toggle('active', name === STYLE_DASHED);
+      state.style = name;
+      localStorage.setItem(KEY_STYLE, name);
+      render();
+    }
+    styleLine.addEventListener('click', () => selectStyle('line'));
+    styleDots.addEventListener('click', () => selectStyle('dots'));
+    styleCross.addEventListener('click', () => selectStyle('cross'));
+    styleDashed.addEventListener('click', () => selectStyle('dashed'));
+    // Size
+    var size = document.getElementById('size');
+    var sizeInput = document.getElementById('sizeInput');
+    var offsetX = document.getElementById('offsetX');
+    var offsetXInput = document.getElementById('offsetXInput');
+    var offsetY = document.getElementById('offsetY');
+    var offsetYInput = document.getElementById('offsetYInput');
+    function selectSize(n) {
+      const i = parseInt(n, 10);
+      var invalid = true;
+      if (i >= 20 && i <= 80) {
+        size.value = i;
+        sizeInput.value = i;
+        offsetX.setAttribute('max', i - 1);
+        offsetY.setAttribute('max', i - 1);
+        state.size = i;
+        localStorage.setItem(KEY_SIZE, i);
+        render();
+        invalid = false;
+      }
+      sizeInput.classList.toggle('invalid', invalid);
+    }
+    size.addEventListener('input', (e) => selectSize(e.target.value));
+    sizeInput.addEventListener('input', (e) => selectSize(e.target.value));
+    // Pull from localStorage
+    selectColor(localStorage.getItem(KEY_COLOR) || KEY_COLOR_DEFAULT);
+    selectBase(localStorage.getItem(KEY_BASE) || KEY_BASE_DEFAULT);
+    selectStyle(localStorage.getItem(KEY_STYLE) || KEY_STYLE_DEFAULT);
+    selectSize(localStorage.getItem(KEY_SIZE) || KEY_SIZE_DEFAULT);
+    render();
+  </script>
+</body>
+
+</html>
