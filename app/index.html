@@ -339,7 +339,7 @@
   <aside>
     <section>
       <h1>
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M15.54,3.5L20.5,8.47L19.07,9.88L14.12,4.93L15.54,3.5M3.5,19.78L10,13.31C9.9,13 9.97,12.61 10.23,12.35C10.62,11.96 11.26,11.96 11.65,12.35C12.04,12.75 12.04,13.38 11.65,13.77C11.39,14.03 11,14.1 10.69,14L4.22,20.5L14.83,16.95L18.36,10.59L13.42,5.64L7.05,9.17L3.5,19.78Z" /></svg>
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20.71,7.04C20.37,7.38 20.04,7.71 20.03,8.04C20,8.36 20.34,8.69 20.66,9C21.14,9.5 21.61,9.95 21.59,10.44C21.57,10.93 21.06,11.44 20.55,11.94L16.42,16.08L15,14.66L19.25,10.42L18.29,9.46L16.87,10.87L13.12,7.12L16.96,3.29C17.35,2.9 18,2.9 18.37,3.29L20.71,5.63C21.1,6 21.1,6.65 20.71,7.04M3,17.25L12.56,7.68L16.31,11.43L6.75,21H3V17.25Z" /></svg>
         reMarkable Templates
       </h1>
       <h2>Base</h2>
@@ -557,29 +557,35 @@
               }
               break;
             case STYLE_DASHED:
+              // Ex: 20 = 19 + 1w
+              // | x + xx | -- | xxxx | --- | xxxx | -- | xx |
+              var dash = Math.floor((state.size - (3 * 2 * state.weight)) / 3);
+              var space = 2 * state.weight;
+              console.log(dash, space);
               for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
-                ctx.setLineDash([10, 4]);/*dashes are 5px and spaces are 3px*/
+                // ctx.setLineDash([state.weight + dash, space, dash, space, dash, 0]);
+                ctx.setLineDash([5, 4, 9, 5, 9, 4, 4, 0]);
                 ctx.beginPath();
                 ctx.moveTo(
-                  x * state.size + state.offsetX,
+                  x * state.size + state.offsetX + nudge,
                   0
                 );
                 ctx.lineTo(
-                  x * state.size + state.offsetX,
+                  x * state.size + state.offsetX + nudge,
                   HEIGHT
                 );
                 ctx.stroke();
               }
               for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
-                ctx.setLineDash([10, 4]);/*dashes are 5px and spaces are 3px*/
+                ctx.setLineDash([5, 4, 9, 5, 9, 4, 4, 0]);
                 ctx.beginPath();
                 ctx.moveTo(
                   0,
-                  y * state.size + state.offsetY
+                  y * state.size + state.offsetY + nudge
                 );
                 ctx.lineTo(
                   WIDTH,
-                  y * state.size + state.offsetY
+                  y * state.size + state.offsetY + nudge
                 );
                 ctx.stroke();
               }
