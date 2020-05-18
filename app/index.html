@@ -623,21 +623,36 @@
               }
               break;
             case STYLE_DOTS:
-              // WIP
-              for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
-                for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
+              for (var x = 0; x < Math.ceil((WIDTH / isoX) / 2); x++) {
+                for (var y = 0; y < Math.ceil(HEIGHT / isoY); y++) {
                   if (state.dot === DOT_SQUARE) {
                     ctx.fillRect(
-                      (x * state.size) - Math.floor(state.weight / 2) + state.offsetX,
-                      (y * state.size) - Math.floor(state.weight / 2) + state.offsetY,
+                      state.size + (x * state.size * 2) - Math.floor(state.weight / 2) + state.offsetX,
+                      (y * isoY * 2) - Math.floor(state.weight / 2) + state.offsetY,
+                      state.weight,
+                      state.weight
+                    );
+                    ctx.fillRect(
+                      (x * state.size * 2) - Math.floor(state.weight / 2) + state.offsetX,
+                      isoY + (y * isoY * 2) - Math.floor(state.weight / 2) + state.offsetY,
                       state.weight,
                       state.weight
                     );
                   } else {
                     ctx.beginPath();
                     ctx.arc(
-                      x * state.size + nudge + state.offsetX,
-                      y * state.size + nudge + state.offsetY,
+                      state.size + (x * state.size * 2) - Math.floor(state.weight / 2) + state.offsetX + nudge,
+                      (y * isoY * 2) - Math.floor(state.weight / 2) + state.offsetY + nudge,
+                      state.weight / 2,
+                      0,
+                      2 * Math.PI,
+                      false
+                    );
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(
+                      (x * state.size * 2) - Math.floor(state.weight / 2) + state.offsetX + nudge,
+                      isoY + (y * isoY * 2) - Math.floor(state.weight / 2) + state.offsetY + nudge,
                       state.weight / 2,
                       0,
                       2 * Math.PI,
