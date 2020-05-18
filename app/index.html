@@ -4,8 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/png" href="images/favicon.svg"/>
   <title>reMarkable Template Builder</title>
-  <!-- Judge the code later, just needed the output -->
+  <!-- This was a very quick weekend project... -->
+  <!-- this is obviously not maintainable -->
   <style>
     /* noto-serif-regular - latin */
     @font-face {
@@ -78,7 +80,7 @@
     }
     h2 {
       margin: 0;
-      padding: 0.75rem 1rem;
+      padding: 0.75rem 1rem 0.5rem 1rem;
       font-weight: 700;
       font-size: 1rem;
     }
@@ -250,13 +252,16 @@
     }
     input[type=range]::-webkit-slider-thumb {
       border: 2px solid #000000;
-      height: 1.25rem;
+      height: 1.5rem;
       width: 1.25rem;
-      border-radius: 50%;
+      border-radius: 0.25rem;
       background: #ffffff;
       cursor: pointer;
       -webkit-appearance: none;
       margin-top: 0.3125rem;
+    }
+    input[type=range]::-webkit-slider-thumb:hover {
+      box-shadow: 0 1px 0.5rem rgba(0, 0, 0, 0.4);
     }
     input[type=range]:focus::-webkit-slider-runnable-track {
       background: rgb(171, 171, 171);
@@ -270,11 +275,14 @@
     }
     input[type=range]::-moz-range-thumb {
       border: 2px solid #000000;
-      height: 1.25rem;
+      height: 1.5rem;
       width: 1.25rem;
-      border-radius: 50%;
+      border-radius: 0.25rem;
       background: #ffffff;
       cursor: pointer;
+    }
+    input[type=range]::-moz-range-thumb:hover {
+      box-shadow: 0 1px 0.5rem rgba(0, 0, 0, 0.4);
     }
     .slider {
       display: grid;
@@ -313,6 +321,9 @@
     .mb-25 {
       margin-bottom: 0.25rem;
     }
+    .hide {
+      display: none;
+    }
     .toolbar {
       grid-column: 4;
       grid-row: 1;
@@ -343,24 +354,20 @@
         <button id="styleCross">Cross</button>
         <button id="styleDashed">Dashed</button>
       </div>
-      <h2>Cross Size</h2>
-      <div class="slider">
-        <svg width="24" height="24" viewBox="0 0 24 24"><path d="M19,17H21V15H19M19,21H21V19H19M13,3H11V11H3V13H11V21H13V13H21V11H13M15,21H17V19H15M19,5H21V3H19M19,9H21V7H19M17,3H15V5H17M5,3H3V5H5M9,3H7V5H9M3,17H5V15H3M5,7H3V9H5M7,21H9V19H7M3,21H5V19H3V21Z" /></svg>
-        <input id="cross" type="range" min="5" max="20" value="5" />
-        <input id="crossInput" type="text" value="5" />
+      <div id="crossSection">
+        <h2>Cross Size</h2>
+        <div class="slider">
+          <svg width="24" height="24" viewBox="0 0 24 24"><path d="M19,17H21V15H19M19,21H21V19H19M13,3H11V11H3V13H11V21H13V13H21V11H13M15,21H17V19H15M19,5H21V3H19M19,9H21V7H19M17,3H15V5H17M5,3H3V5H5M9,3H7V5H9M3,17H5V15H3M5,7H3V9H5M7,21H9V19H7M3,21H5V19H3V21Z" /></svg>
+          <input id="cross" type="range" min="2" max="20" value="2" />
+          <input id="crossInput" type="text" value="2" />
+        </div>
       </div>
-      <h2>Weight</h2>
-      <div class="group">
-        <button>1</button>
-        <button>2</button>
-        <button>3</button>
-        <button>4</button>
-        <button>5</button>
-      </div>
-      <h2>Dot Style</h2>
-      <div class="group">
-        <button>Circle</button>
-        <button>Square</button>
+      <div id="dotSection">
+        <h2>Dot Style</h2>
+        <div class="group">
+          <button id="dotCircle">Circle</button>
+          <button id="dotSquare">Square</button>
+        </div>
       </div>
       <h2>Size</h2>
       <div class="slider">
@@ -378,6 +385,14 @@
         <svg width="24" height="24" viewBox="0 0 24 24"><path d="M22,4V2H2V4H11V18.17L5.5,12.67L4.08,14.08L12,22L19.92,14.08L18.5,12.67L13,18.17V4H22Z" /></svg>
         <input id="offsetY" type="range" min="0" max="100" value="0" />
         <input id="offsetYInput" type="text" value="0" />
+      </div>
+      <h2>Weight</h2>
+      <div class="group">
+        <button id="weight1">1</button>
+        <button id="weight2">2</button>
+        <button id="weight3">3</button>
+        <button id="weight4">4</button>
+        <button id="weight5">5</button>
       </div>
       <h2>Colors</h2>
       <div class="colors">
@@ -398,6 +413,8 @@
   <canvas width="1404" height="1872"></canvas>
   <div id="toolbar" class="toolbar"></div>
   <script>
+    // Utils
+    var toInt = function(i) { return parseInt(i, 10); };
     // Enums
     var COLORS = [
       'rgb(230, 230, 230)',
@@ -425,88 +442,148 @@
     var STYLE_DASHED = 'dashed';
     var KEY_STYLE = 'style';
     var KEY_STYLE_DEFAULT = STYLE_DOTS;
+    var KEY_OFFSETX = 'offsetx';
     var KEY_OFFSETX_DEFAULT = '0';
+    var KEY_OFFSETY = 'offsety';
     var KEY_OFFSETY_DEFAULT = '0';
+    var KEY_CROSS = 'cross';
+    var KEY_CROSS_DEFAULT = '2';
+    var KEY_WEIGHT = 'weight';
+    var KEY_WEIGHT_DEFAULT = '1';
+    var DOT_SQUARE = 'square';
+    var DOT_CIRCLE = 'circle';
+    var KEY_DOT = 'dot';
+    var KEY_DOT_DEFAULT = DOT_SQUARE;
     var WIDTH = 1404;
     var HEIGHT = 1872;
     // State
     var state = {
       base: KEY_BASE_DEFAULT,
       style: KEY_STYLE_DEFAULT,
-      size: KEY_SIZE_DEFAULT,
-      offsetX: KEY_OFFSETX_DEFAULT,
-      offsetY: KEY_OFFSETY_DEFAULT,
+      size: toInt(KEY_SIZE_DEFAULT),
+      offsetX: toInt(KEY_OFFSETX_DEFAULT),
+      offsetY: toInt(KEY_OFFSETY_DEFAULT),
+      cross: toInt(KEY_CROSS_DEFAULT),
+      weight: toInt(KEY_WEIGHT_DEFAULT),
+      dot: KEY_DOT_DEFAULT,
       overlayToolbar: true
     };
     // Elements
     var aside = document.getElementsByTagName('aside')[0];
     var canvas = document.getElementsByTagName('canvas')[0];
     const ctx = canvas.getContext('2d');
+    // Render with `state`
     function render() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       var colorIndex = parseInt(state.color, 10);
       ctx.fillStyle = COLORS[colorIndex];
       ctx.strokeStyle = COLORS[colorIndex];
-      ctx.lineWidth = 1;
+      ctx.lineWidth = state.weight;
+      // TODO: offsetX = state.weight / 2
+      var nudge = state.weight % 2 ? 0.5 : 0;
       switch (state.base) {
         case BASE_GRID:
           switch(state.style) {
             case STYLE_LINE:
               for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
-                ctx.fillRect(x * state.size, 0, 2, HEIGHT);
+                ctx.fillRect(
+                  (x * state.size) - Math.floor(state.weight / 2) + state.offsetX,
+                  0,
+                  state.weight,
+                  HEIGHT
+                );
               }
               for (var y = 0; y < Math.ceil(HEIGHT / 40); y++) {
-                ctx.fillRect(0, y * state.size, WIDTH, 2);
+                ctx.fillRect(
+                  0,
+                  (y * state.size) - Math.floor(state.weight / 2) + state.offsetY,
+                  WIDTH,
+                  state.weight
+                );
               }
               break;
             case STYLE_DOTS:
               for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
-                ctx.setLineDash([5, 3]);/*dashes are 5px and spaces are 3px*/
+                for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
+                  if (state.dot === DOT_SQUARE) {
+                    ctx.fillRect(
+                      (x * state.size) - Math.floor(state.weight / 2) + state.offsetX,
+                      (y * state.size) - Math.floor(state.weight / 2) + state.offsetY,
+                      state.weight,
+                      state.weight
+                    );
+                  } else {
+                    ctx.beginPath();
+                    ctx.arc(
+                      x * state.size + nudge + state.offsetX,
+                      y * state.size + nudge + state.offsetY,
+                      state.weight / 2,
+                      0,
+                      2 * Math.PI,
+                      false
+                    );
+                    ctx.fill();
+                  }
+                }
+              }
+              break;
+            case STYLE_CROSS:
+              var crossSize = (state.cross * 2) + state.weight;
+              for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
+                ctx.setLineDash([crossSize, state.size - crossSize]);/*dashes are 5px and spaces are 3px*/
                 ctx.beginPath();
-                ctx.moveTo(x * state.size, 0);
-                ctx.lineTo(x * state.size, HEIGHT);
+                ctx.moveTo(
+                  (x * state.size) + nudge + state.offsetX,
+                  -1 * state.cross - Math.floor(state.weight / 2) + state.offsetY
+                );
+                ctx.lineTo(
+                  (x * state.size) + nudge + state.offsetX,
+                  HEIGHT
+                );
                 ctx.stroke();
               }
               for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
-                ctx.setLineDash([5, 3]);/*dashes are 5px and spaces are 3px*/
+                ctx.setLineDash([crossSize, state.size - crossSize]);/*dashes are 5px and spaces are 3px*/
                 ctx.beginPath();
-                ctx.moveTo(0, y * state.size);
-                ctx.lineTo(WIDTH, y * state.size);
+                ctx.moveTo(
+                  -1 * state.cross - Math.floor(state.weight / 2) + state.offsetX,
+                  (y * state.size) + nudge + state.offsetY
+                );
+                ctx.lineTo(
+                  WIDTH,
+                  (y * state.size) + nudge + state.offsetY
+                );
                 ctx.stroke();
               }
               break;
-              case STYLE_CROSS:
-                for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
-                  ctx.setLineDash([5, state.size - 5]);/*dashes are 5px and spaces are 3px*/
-                  ctx.beginPath();
-                  ctx.moveTo((x * state.size) + 0.5, -2);
-                  ctx.lineTo((x * state.size) + 0.5, HEIGHT);
-                  ctx.stroke();
-                }
-                for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
-                  ctx.setLineDash([5, state.size - 5]);/*dashes are 5px and spaces are 3px*/
-                  ctx.beginPath();
-                  ctx.moveTo(-2, (y * state.size) + 0.5);
-                  ctx.lineTo(WIDTH, (y * state.size) + 0.5);
-                  ctx.stroke();
-                }
-                break;
-              case STYLE_DASHED:
-                for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
-                  ctx.setLineDash([5, 3]);/*dashes are 5px and spaces are 3px*/
-                  ctx.beginPath();
-                  ctx.moveTo(x * state.size, 0);
-                  ctx.lineTo(x * state.size, HEIGHT);
-                  ctx.stroke();
-                }
-                for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
-                  ctx.setLineDash([5, 3]);/*dashes are 5px and spaces are 3px*/
-                  ctx.beginPath();
-                  ctx.moveTo(0, y * state.size);
-                  ctx.lineTo(WIDTH, y * state.size);
-                  ctx.stroke();
-                }
-                break;
+            case STYLE_DASHED:
+              for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
+                ctx.setLineDash([10, 4]);/*dashes are 5px and spaces are 3px*/
+                ctx.beginPath();
+                ctx.moveTo(
+                  x * state.size + state.offsetX,
+                  0
+                );
+                ctx.lineTo(
+                  x * state.size + state.offsetX,
+                  HEIGHT
+                );
+                ctx.stroke();
+              }
+              for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
+                ctx.setLineDash([10, 4]);/*dashes are 5px and spaces are 3px*/
+                ctx.beginPath();
+                ctx.moveTo(
+                  0,
+                  y * state.size + state.offsetY
+                );
+                ctx.lineTo(
+                  WIDTH,
+                  y * state.size + state.offsetY
+                );
+                ctx.stroke();
+              }
+              break;
           }
           break;
         case BASE_ISOMETRIC:
@@ -552,11 +629,15 @@
     var styleDots = document.getElementById('styleDots');
     var styleCross = document.getElementById('styleCross');
     var styleDashed = document.getElementById('styleDashed');
+    var dotSection = document.getElementById('dotSection');
+    var crossSection = document.getElementById('crossSection');
     function selectStyle(name) {
       styleLine.classList.toggle('active', name === STYLE_LINE);
       styleDots.classList.toggle('active', name === STYLE_DOTS);
       styleCross.classList.toggle('active', name === STYLE_CROSS);
       styleDashed.classList.toggle('active', name === STYLE_DASHED);
+      dotSection.classList.toggle('hide', name !== STYLE_DOTS);
+      crossSection.classList.toggle('hide', name !== STYLE_CROSS);
       state.style = name;
       localStorage.setItem(KEY_STYLE, name);
       render();
@@ -572,14 +653,24 @@
     var offsetXInput = document.getElementById('offsetXInput');
     var offsetY = document.getElementById('offsetY');
     var offsetYInput = document.getElementById('offsetYInput');
+    var cross = document.getElementById('cross');
+    var crossInput = document.getElementById('crossInput');
     function selectSize(n) {
-      const i = parseInt(n, 10);
+      var i = parseInt(n, 10);
+      var min = parseInt(size.getAttribute('min'), 10);
+      var max = parseInt(size.getAttribute('max'), 10);
       var invalid = true;
-      if (i >= 20 && i <= 80) {
+      if (i >= min && i <= max) {
         size.value = i;
         sizeInput.value = i;
         offsetX.setAttribute('max', i - 1);
         offsetY.setAttribute('max', i - 1);
+        var newCrossMax = Math.floor((i - 2) / 2);
+        cross.setAttribute('max', newCrossMax);
+        if (state.cross > newCrossMax) {
+          cross.value = newCrossMax;
+          crossInput.value = newCrossMax;
+        }
         state.size = i;
         localStorage.setItem(KEY_SIZE, i);
         render();
@@ -589,11 +680,104 @@
     }
     size.addEventListener('input', (e) => selectSize(e.target.value));
     sizeInput.addEventListener('input', (e) => selectSize(e.target.value));
+    // Weight
+    var weight1 = document.getElementById('weight1');
+    var weight2 = document.getElementById('weight2');
+    var weight3 = document.getElementById('weight3');
+    var weight4 = document.getElementById('weight4');
+    var weight5 = document.getElementById('weight5');
+    function selectWeight(i) {
+      var weight = toInt(i);
+      weight1.classList.toggle('active', weight === 1);
+      weight2.classList.toggle('active', weight === 2);
+      weight3.classList.toggle('active', weight === 3);
+      weight4.classList.toggle('active', weight === 4);
+      weight5.classList.toggle('active', weight === 5);
+      state.weight = weight;
+      localStorage.setItem(KEY_WEIGHT, weight);
+      render();
+    }
+    weight1.addEventListener('click', () => selectWeight('1'));
+    weight2.addEventListener('click', () => selectWeight('2'));
+    weight3.addEventListener('click', () => selectWeight('3'));
+    weight4.addEventListener('click', () => selectWeight('4'));
+    weight5.addEventListener('click', () => selectWeight('5'));
+    // Offset X
+    function selectOffsetX(n) {
+      var i = parseInt(n, 10);
+      var min = parseInt(offsetX.getAttribute('min'), 10);
+      var max = parseInt(offsetX.getAttribute('max'), 10);
+      var invalid = true;
+      if (i >= min && i <= max) {
+        offsetX.value = i;
+        offsetXInput.value = i;
+        state.offsetX = i;
+        localStorage.setItem(KEY_OFFSETX, i);
+        render();
+        invalid = false;
+      }
+      offsetXInput.classList.toggle('invalid', invalid);
+    }
+    offsetX.addEventListener('input', (e) => selectOffsetX(e.target.value));
+    offsetXInput.addEventListener('input', (e) => selectOffsetX(e.target.value));
+    // Offset Y
+    function selectOffsetY(n) {
+      var i = parseInt(n, 10);
+      var min = parseInt(offsetY.getAttribute('min'), 10);
+      var max = parseInt(offsetY.getAttribute('max'), 10);
+      var invalid = true;
+      if (i >= min && i <= max) {
+        offsetY.value = i;
+        offsetYInput.value = i;
+        state.offsetY = i;
+        localStorage.setItem(KEY_OFFSETY, i);
+        render();
+        invalid = false;
+      }
+      offsetYInput.classList.toggle('invalid', invalid);
+    }
+    offsetY.addEventListener('input', (e) => selectOffsetY(e.target.value));
+    offsetYInput.addEventListener('input', (e) => selectOffsetY(e.target.value));
+    // Cross Size
+    function selectCross(n) {
+      var i = parseInt(n, 10);
+      var min = parseInt(cross.getAttribute('min'), 10);
+      var max = parseInt(cross.getAttribute('max'), 10);
+      var invalid = true;
+      if (i >= min && i <= max) {
+        cross.value = i;
+        crossInput.value = i;
+        state.cross = i;
+        localStorage.setItem(KEY_CROSS, i);
+        render();
+        invalid = false;
+      }
+      crossInput.classList.toggle('invalid', invalid);
+    }
+    cross.addEventListener('input', (e) => selectCross(e.target.value));
+    crossInput.addEventListener('input', (e) => selectCross(e.target.value));
+    // Dot Style
+    var dotSquare = document.getElementById('dotSquare');
+    var dotCircle = document.getElementById('dotCircle');
+    function selectDot(name) {
+      dotCircle.classList.toggle('active', name === DOT_CIRCLE);
+      dotSquare.classList.toggle('active', name === DOT_SQUARE);
+      state.dot = name;
+      localStorage.setItem(KEY_DOT, name);
+      render();
+    }
+    dotSquare.addEventListener('click', () => selectDot(DOT_SQUARE));
+    dotCircle.addEventListener('click', () => selectDot(DOT_CIRCLE));
     // Pull from localStorage
     selectColor(localStorage.getItem(KEY_COLOR) || KEY_COLOR_DEFAULT);
     selectBase(localStorage.getItem(KEY_BASE) || KEY_BASE_DEFAULT);
     selectStyle(localStorage.getItem(KEY_STYLE) || KEY_STYLE_DEFAULT);
     selectSize(localStorage.getItem(KEY_SIZE) || KEY_SIZE_DEFAULT);
+    selectCross(localStorage.getItem(KEY_CROSS) || KEY_CROSS_DEFAULT);
+    selectOffsetX(localStorage.getItem(KEY_OFFSETX) || KEY_OFFSETX_DEFAULT);
+    selectOffsetY(localStorage.getItem(KEY_OFFSETY) || KEY_OFFSETY_DEFAULT);
+    selectWeight(localStorage.getItem(KEY_WEIGHT) || KEY_WEIGHT_DEFAULT);
+    selectDot(localStorage.getItem(KEY_DOT) || KEY_DOT_DEFAULT);
     render();
   </script>
 </body>
