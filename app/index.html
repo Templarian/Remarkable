@@ -493,7 +493,7 @@
                   HEIGHT
                 );
               }
-              for (var y = 0; y < Math.ceil(HEIGHT / 40); y++) {
+              for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
                 ctx.fillRect(
                   0,
                   (y * state.size) - Math.floor(state.weight / 2) + state.offsetY,
@@ -593,7 +593,61 @@
           }
           break;
         case BASE_ISOMETRIC:
-
+          var isoX = state.size;
+          var isoY = Math.round(state.size * 0.6666);
+          switch(state.style) {
+            case STYLE_LINE:
+              for (var y = Math.ceil(HEIGHT * -1.3333); y < Math.ceil((HEIGHT * 1.6666) / state.size); y++) {
+                ctx.beginPath();
+                ctx.moveTo(
+                  0,
+                  (y * state.size) - Math.floor(state.weight / 2) + state.offsetY
+                );
+                ctx.lineTo(
+                  WIDTH,
+                  (y * state.size) - Math.floor(state.weight / 2) + state.offsetY + Math.round(WIDTH * 0.6666)
+                );
+                ctx.stroke();
+              }
+              for (var x = 0; x < Math.ceil((HEIGHT * 1.6666) / state.size); x++) {
+                ctx.beginPath();
+                ctx.moveTo(
+                  0,
+                  (x * state.size) - Math.floor(state.weight / 2) + state.offsetY
+                );
+                ctx.lineTo(
+                  WIDTH,
+                  (x * state.size) - Math.floor(state.weight / 2) + state.offsetY + Math.round(WIDTH * -0.6666)
+                );
+                ctx.stroke();
+              }
+              break;
+            case STYLE_DOTS:
+              for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
+                for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
+                  if (state.dot === DOT_SQUARE) {
+                    ctx.fillRect(
+                      (x * state.size) - Math.floor(state.weight / 2) + state.offsetX,
+                      (y * state.size) - Math.floor(state.weight / 2) + state.offsetY,
+                      state.weight,
+                      state.weight
+                    );
+                  } else {
+                    ctx.beginPath();
+                    ctx.arc(
+                      x * state.size + nudge + state.offsetX,
+                      y * state.size + nudge + state.offsetY,
+                      state.weight / 2,
+                      0,
+                      2 * Math.PI,
+                      false
+                    );
+                    ctx.fill();
+                  }
+                }
+              }
+              break;
+            }
           break;
       }
     }
