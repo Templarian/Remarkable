@@ -643,20 +643,21 @@
         case BASE_ISOMETRIC:
           var isoX = state.size * 0.75;
           var isoY = Math.round(state.size * 0.6666 * 0.75);
+          if (state.vertical !== 'none') {
+            var xxWidth = Math.ceil(state.size * 0.75);
+            for (var xx = 0; xx < Math.ceil(WIDTH / xxWidth); xx++) {
+              ctx.fillStyle = COLORS[state.vertical];
+              ctx.fillRect(
+                xx * xxWidth - halfWeight + Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75),
+                0,
+                state.weight,
+                HEIGHT
+              );
+            }
+          }
+          ctx.fillStyle = COLORS[colorIndex];
           switch(state.style) {
             case STYLE_LINE:
-              if (state.vertical !== 'none') {
-                var xxWidth = Math.ceil(state.size * 0.75);
-                for (var xx = 0; xx < Math.ceil(WIDTH / xxWidth); xx++) {
-                  ctx.fillStyle = COLORS[state.vertical];
-                  ctx.fillRect(
-                    xx * xxWidth - halfWeight + Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75),
-                    0,
-                    state.weight,
-                    HEIGHT
-                  );
-                }
-              }
               for (var y = Math.ceil(HEIGHT * -1.3333); y < Math.ceil((HEIGHT * 1.6666) / state.size); y++) {
                 ctx.beginPath();
                 ctx.moveTo(
