@@ -649,7 +649,7 @@
                 for (var xx = 0; xx < Math.ceil(WIDTH / xxWidth); xx++) {
                   ctx.fillStyle = COLORS[state.vertical];
                   ctx.fillRect(
-                    xx * xxWidth - halfWeight + Math.ceil(state.offsetX * 0.75) - Math.ceil(state.offsetY * 0.75),
+                    xx * xxWidth - halfWeight + Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75),
                     0,
                     state.weight,
                     HEIGHT
@@ -660,11 +660,11 @@
                 ctx.beginPath();
                 ctx.moveTo(
                   0,
-                  (y * state.size) + state.offsetY
+                  (y * state.size) - state.offsetY
                 );
                 ctx.lineTo(
                   WIDTH,
-                  (y * state.size) + state.offsetY + Math.round(WIDTH * 0.6666)
+                  (y * state.size) - state.offsetY + Math.round(WIDTH * 0.6666)
                 );
                 ctx.stroke();
               }
