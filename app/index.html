@@ -88,6 +88,8 @@
       display: flex;
     }
     div.group button {
+      display: flex;
+      justify-content: center;
       flex: 1;
       font-size: 0.875rem;
       line-height: 2rem;
@@ -95,6 +97,8 @@
       outline: 0;
       background: rgba(36, 36, 36);
       color: #FFF;
+      min-height: 34px;
+      padding: 0;
     }
     div.group button:not(:last-child) {
       border-right: 1px solid rgba(255, 255, 255, 0.1);
@@ -109,14 +113,37 @@
     div.group button.active:not(:last-child) {
       background: rgb(230, 230, 230);
       box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3) inset;
-      color: #555;
+      color: #444;
       border-right: 1px solid rgba(0, 0, 0, 0.1);
     }
     div.group button.active:last-child {
       background: rgb(230, 230, 230);
       box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.3) inset;
-      color: #555;
+      color: #444;
       border-left: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    div.group button svg {
+      margin: 0 0.25rem;
+    }
+    div.group button.active.light::before {
+      content: '✔';
+      color: #222;
+      font-weight: bold;
+    }
+    div.group button.light:hover::before {
+      content: '✔';
+      color: #222;
+      font-weight: bold;
+    }
+    div.group button.active.dark::before {
+      content: '✔';
+      color: #FFF;
+      font-weight: bold;
+    }
+    div.group button.dark:hover::before {
+      content: '✔';
+      color: #FFF;
+      font-weight: bold;
     }
     div.colors {
       display: grid;
@@ -354,6 +381,22 @@
         <button id="styleCross">Cross</button>
         <button id="styleDashed">Dashed</button>
       </div>
+      <div id="verticalSection">
+        <h2>Vertical Lines</h2>
+        <div class="group">
+          <button id="verticalNone"><svg width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12C4,13.85 4.63,15.55 5.68,16.91L16.91,5.68C15.55,4.63 13.85,4 12,4M12,20A8,8 0 0,0 20,12C20,10.15 19.37,8.45 18.32,7.09L7.09,18.32C8.45,19.37 10.15,20 12,20Z" /></svg></button>
+          <button id="vertical0" class="light"></button>
+          <button id="vertical1" class="light"></button>
+          <button id="vertical2" class="light"></button>
+          <button id="vertical3" class="light"></button>
+          <button id="vertical4" class="light"></button>
+          <button id="vertical5" class="dark"></button>
+          <button id="vertical6" class="dark"></button>
+          <button id="vertical7" class="dark"></button>
+          <button id="vertical8" class="dark"></button>
+          <button id="vertical9" class="dark"></button>
+        </div>
+      </div>
       <div id="crossSection">
         <h2>Cross Size</h2>
         <div class="slider">
@@ -454,6 +497,9 @@
     var DOT_CIRCLE = 'circle';
     var KEY_DOT = 'dot';
     var KEY_DOT_DEFAULT = DOT_SQUARE;
+    var KEY_VERTICAL = 'vertical';
+    var VERTICAL_NONE = 'none';
+    var KEY_VERTICAL_DEFAULT = VERTICAL_NONE;
     var WIDTH = 1404;
     var HEIGHT = 1872;
     // State
@@ -481,6 +527,7 @@
       ctx.lineWidth = state.weight;
       // TODO: offsetX = state.weight / 2
       var nudge = state.weight % 2 ? 0.5 : 0;
+      var halfWeight = Math.floor(state.weight / 2);
       switch (state.base) {
         case BASE_GRID:
           switch(state.style) {
@@ -601,11 +648,11 @@
                 ctx.beginPath();
                 ctx.moveTo(
                   0,
-                  (y * state.size) - Math.floor(state.weight / 2) + state.offsetY
+                  (y * state.size) + state.offsetY
                 );
                 ctx.lineTo(
                   WIDTH,
-                  (y * state.size) - Math.floor(state.weight / 2) + state.offsetY + Math.round(WIDTH * 0.6666)
+                  (y * state.size) + state.offsetY + Math.round(WIDTH * 0.6666)
                 );
                 ctx.stroke();
               }
@@ -613,13 +660,19 @@
                 ctx.beginPath();
                 ctx.moveTo(
                   0,
-                  (x * state.size) - Math.floor(state.weight / 2) + state.offsetY
+                  (x * state.size) + state.offsetY
                 );
                 ctx.lineTo(
                   WIDTH,
-                  (x * state.size) - Math.floor(state.weight / 2) + state.offsetY + Math.round(WIDTH * -0.6666)
+                  (x * state.size) + state.offsetY + Math.round(WIDTH * -0.6666)
                 );
                 ctx.stroke();
+              }
+              if (state.vertical !== 'none') {
+                for (var xx = 0; xx < Math.ceil(WIDTH / state.size); xx++) {
+                  ctx.fillStyle = COLORS[state.vertical];
+                  ctx.fillRect(xx * state.size, 0, state.weight, HEIGHT);
+                }
               }
               break;
             case STYLE_DOTS:
@@ -628,13 +681,13 @@
                   if (state.dot === DOT_SQUARE) {
                     ctx.fillRect(
                       state.size + (x * state.size * 2) - Math.floor(state.weight / 2) + state.offsetX,
-                      (y * isoY * 2) - Math.floor(state.weight / 2) + state.offsetY,
+                      isoY + (y * isoY * 2) - Math.floor(state.weight / 2) + state.offsetY,
                       state.weight,
                       state.weight
                     );
                     ctx.fillRect(
                       (x * state.size * 2) - Math.floor(state.weight / 2) + state.offsetX,
-                      isoY + (y * isoY * 2) - Math.floor(state.weight / 2) + state.offsetY,
+                      (y * isoY * 2) - Math.floor(state.weight / 2) + state.offsetY,
                       state.weight,
                       state.weight
                     );
@@ -642,7 +695,7 @@
                     ctx.beginPath();
                     ctx.arc(
                       state.size + (x * state.size * 2) - Math.floor(state.weight / 2) + state.offsetX + nudge,
-                      (y * isoY * 2) - Math.floor(state.weight / 2) + state.offsetY + nudge,
+                      isoY + (y * isoY * 2) - Math.floor(state.weight / 2) + state.offsetY + nudge,
                       state.weight / 2,
                       0,
                       2 * Math.PI,
@@ -652,7 +705,7 @@
                     ctx.beginPath();
                     ctx.arc(
                       (x * state.size * 2) - Math.floor(state.weight / 2) + state.offsetX + nudge,
-                      isoY + (y * isoY * 2) - Math.floor(state.weight / 2) + state.offsetY + nudge,
+                      (y * isoY * 2) - Math.floor(state.weight / 2) + state.offsetY + nudge,
                       state.weight / 2,
                       0,
                       2 * Math.PI,
@@ -691,9 +744,11 @@
     // Base
     var baseGrid = document.getElementById('baseGrid');
     var baseIsometric = document.getElementById('baseIsometric');
+    var verticalSection = document.getElementById('verticalSection');
     function selectBase(name) {
       baseGrid.classList.toggle('active', name === BASE_GRID);
       baseIsometric.classList.toggle('active', name === BASE_ISOMETRIC);
+      verticalSection.classList.toggle('hide', name !== BASE_ISOMETRIC);
       state.base = name;
       localStorage.setItem(KEY_BASE, name);
       render();
@@ -832,6 +887,56 @@
     }
     cross.addEventListener('input', (e) => selectCross(e.target.value));
     crossInput.addEventListener('input', (e) => selectCross(e.target.value));
+    // Vertical
+    var verticalNone = document.getElementById('verticalNone');
+    var vertical0 = document.getElementById('vertical0');
+    var vertical1 = document.getElementById('vertical1');
+    var vertical2 = document.getElementById('vertical2');
+    var vertical3 = document.getElementById('vertical3');
+    var vertical4 = document.getElementById('vertical4');
+    var vertical5 = document.getElementById('vertical5');
+    var vertical6 = document.getElementById('vertical6');
+    var vertical7 = document.getElementById('vertical7');
+    var vertical8 = document.getElementById('vertical8');
+    var vertical9 = document.getElementById('vertical9');
+    function selectVertical(i) {
+      i = i === 'none' ? 'none' : toInt(i);
+      verticalNone.classList.toggle('active', i === 'none');
+      vertical0.classList.toggle('active', i === 0);
+      vertical0.style.background = COLORS[0];
+      vertical1.classList.toggle('active', i === 1);
+      vertical1.style.background = COLORS[1];
+      vertical2.classList.toggle('active', i === 2);
+      vertical2.style.background = COLORS[2];
+      vertical3.classList.toggle('active', i === 3);
+      vertical3.style.background = COLORS[3];
+      vertical4.classList.toggle('active', i === 4);
+      vertical4.style.background = COLORS[4];
+      vertical5.classList.toggle('active', i === 5);
+      vertical5.style.background = COLORS[5];
+      vertical6.classList.toggle('active', i === 6);
+      vertical6.style.background = COLORS[6];
+      vertical7.classList.toggle('active', i === 7);
+      vertical7.style.background = COLORS[7];
+      vertical8.classList.toggle('active', i === 8);
+      vertical8.style.background = COLORS[8];
+      vertical9.classList.toggle('active', i === 9);
+      vertical9.style.background = COLORS[9];
+      state.vertical = i;
+      localStorage.setItem(KEY_VERTICAL, i);
+      render();
+    }
+    verticalNone.addEventListener('click', () => selectVertical('none'));
+    vertical0.addEventListener('click', () => selectVertical(0));
+    vertical1.addEventListener('click', () => selectVertical(1));
+    vertical2.addEventListener('click', () => selectVertical(2));
+    vertical3.addEventListener('click', () => selectVertical(3));
+    vertical4.addEventListener('click', () => selectVertical(4));
+    vertical5.addEventListener('click', () => selectVertical(5));
+    vertical6.addEventListener('click', () => selectVertical(6));
+    vertical7.addEventListener('click', () => selectVertical(7));
+    vertical8.addEventListener('click', () => selectVertical(8));
+    vertical9.addEventListener('click', () => selectVertical(9));
     // Dot Style
     var dotSquare = document.getElementById('dotSquare');
     var dotCircle = document.getElementById('dotCircle');
@@ -854,6 +959,7 @@
     selectOffsetY(localStorage.getItem(KEY_OFFSETY) || KEY_OFFSETY_DEFAULT);
     selectWeight(localStorage.getItem(KEY_WEIGHT) || KEY_WEIGHT_DEFAULT);
     selectDot(localStorage.getItem(KEY_DOT) || KEY_DOT_DEFAULT);
+    selectVertical(localStorage.getItem(KEY_VERTICAL) || KEY_VERTICAL_DEFAULT);
     render();
   </script>
 </body>
