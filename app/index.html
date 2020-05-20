@@ -7,7 +7,9 @@
   <link rel="shortcut icon" type="image/png" href="images/favicon.svg"/>
   <title>reMarkable Template Builder</title>
   <!-- This was a very quick weekend project... -->
-  <!-- this is obviously not maintainable -->
+  <!-- this is obviously not maintainable, but really just care -->
+  <!-- about the exported PNGs, will refactor if I make a -->
+  <!-- electron app to manage templates. -->
   <style>
     /* noto-serif-regular - latin */
     @font-face {
@@ -471,7 +473,7 @@
       'rgb(52, 52, 52)',
       'rgb(36, 36, 36)',
       'rgb(17, 17, 17)'
-    ]
+    ];
     var KEY_COLOR = 'color';
     var KEY_COLOR_DEFAULT = '9';
     var KEY_SIZE = 'size';
@@ -515,6 +517,24 @@
       dot: KEY_DOT_DEFAULT,
       overlayToolbar: true
     };
+    // Get Dashes
+    function getDashes() {
+      var w = state.weight;
+      var n = w % 2;
+      var s = w === 1 || w === 3 || w === 5 ? 1 : 0;
+      var d = w === 2 || w === 4 ? 1 : 0;
+      console.log(w, n, s, d)
+      var dashes = {
+        //                x - n           0
+        20: [2 + n, 2, 4 + d, 4 + s, 4 + d, 2, 2, 0],
+        40: [4 + n, 4, 8 + d, 6 + s, 8 + d, 4, 4, 0],
+        41: [4 + n, 5, 9 + d, 5 + s, 9 + d, 5, 4, 0]
+      };
+      if (state.size in dashes) {
+        return dashes[state.size];
+      }
+      return [4, 4];
+    }
     // Elements
     var aside = document.getElementsByTagName('aside')[0];
     var canvas = document.getElementsByTagName('canvas')[0];
@@ -607,16 +627,13 @@
             case STYLE_DASHED:
               // Ex: 20 = 19 + 1w
               // | x + xx | -- | xxxx | --- | xxxx | -- | xx |
-              var dash = Math.floor((state.size - (3 * 2 * state.weight)) / 3);
-              var space = 2 * state.weight;
-              console.log(dash, space);
+              var dashes = getDashes();
               for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
-                // ctx.setLineDash([state.weight + dash, space, dash, space, dash, 0]);
-                ctx.setLineDash([5, 4, 9, 5, 9, 4, 4, 0]);
+                ctx.setLineDash(dashes);
                 ctx.beginPath();
                 ctx.moveTo(
                   x * state.size + state.offsetX + nudge,
-                  0
+                  state.offsetY - state.size
                 );
                 ctx.lineTo(
                   x * state.size + state.offsetX + nudge,
@@ -625,10 +642,10 @@
                 ctx.stroke();
               }
               for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
-                ctx.setLineDash([5, 4, 9, 5, 9, 4, 4, 0]);
+                ctx.setLineDash(dashes);
                 ctx.beginPath();
                 ctx.moveTo(
-                  0,
+                  state.offsetX - state.size,
                   y * state.size + state.offsetY + nudge
                 );
                 ctx.lineTo(
