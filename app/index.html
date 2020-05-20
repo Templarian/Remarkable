@@ -528,7 +528,16 @@
         //                x - n           0
         20: [2 + n, 2, 4 + d, 4 + s, 4 + d, 2, 2, 0],
         40: [4 + n, 4, 8 + d, 6 + s, 8 + d, 4, 4, 0],
-        41: [4 + n, 4, 8 + d, 7 + s, 8 + d, 4, 4, 0]
+        41: [4 + n, 4, 9 + d, 5 + s, 9 + d, 4, 4, 0],
+        42: [4 + n, 4, 9 + d, 6 + s, 9 + d, 4, 4, 0],
+        43: [5 + n, 4, 9 + d, 5 + s, 9 + d, 4, 5, 0],
+        44: [5 + n, 4, 9 + d, 6 + s, 9 + d, 4, 5, 0],
+        45: [5 + n, 4, 10 + d, 5 + s, 10 + d, 4, 5, 0],
+        46: [5 + n, 4, 10 + d, 6 + s, 10 + d, 4, 5, 0],
+        47: [6 + n, 4, 10 + d, 5 + s, 10 + d, 4, 6, 0],
+        48: [6 + n, 4, 10 + d, 6 + s, 10 + d, 4, 6, 0],
+        49: [6 + n, 4, 11 + d, 5 + s, 11 + d, 4, 6, 0],
+        50: [6 + n, 4, 11 + d, 6 + s, 11 + d, 4, 6, 0]
       };
       if (state.size in dashes) {
         return dashes[state.size];
@@ -661,11 +670,11 @@
           var isoX = state.size * 0.75;
           var isoY = Math.round(state.size * 0.6666 * 0.75);
           if (state.vertical !== 'none') {
-            var xxWidth = Math.ceil(state.size * 0.75);
+            var xxWidth = state.size * 0.75;
             for (var xx = 0; xx < Math.ceil(WIDTH / xxWidth); xx++) {
               ctx.fillStyle = COLORS[state.vertical];
               ctx.fillRect(
-                xx * xxWidth - halfWeight + Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75),
+                Math.ceil(xx * xxWidth - halfWeight) + Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75),
                 0,
                 state.weight,
                 HEIGHT
@@ -705,21 +714,21 @@
                 for (var y = 0; y < Math.ceil(HEIGHT / isoY); y++) {
                   if (state.dot === DOT_SQUARE) {
                     ctx.fillRect(
-                      isoX + (x * isoX * 2) - Math.floor(state.weight / 2) + state.offsetX,
-                      isoY + (y * isoY * 2) - Math.floor(state.weight / 2) + state.offsetY,
+                      Math.ceil(isoX + (x * isoX * 2)) - halfWeight + state.offsetX,
+                      isoY + (y * isoY * 2) - halfWeight + state.offsetY,
                       state.weight,
                       state.weight
                     );
                     ctx.fillRect(
-                      (x * isoX * 2) - Math.floor(state.weight / 2) + state.offsetX,
-                      (y * isoY * 2) - Math.floor(state.weight / 2) + state.offsetY,
+                      Math.ceil(x * isoX * 2) - halfWeight + state.offsetX,
+                      (y * isoY * 2) - halfWeight + state.offsetY,
                       state.weight,
                       state.weight
                     );
                   } else {
                     ctx.beginPath();
                     ctx.arc(
-                      isoX + (x * isoX * 2) + state.offsetX + nudge,
+                      Math.ceil(isoX + (x * isoX * 2)) + state.offsetX + nudge,
                       isoY + (y * isoY * 2) + state.offsetY + nudge,
                       state.weight / 2,
                       0,
@@ -729,7 +738,7 @@
                     ctx.fill();
                     ctx.beginPath();
                     ctx.arc(
-                      (x * isoX * 2) + state.offsetX + nudge,
+                      Math.ceil(x * isoX * 2) + state.offsetX + nudge,
                       (y * isoY * 2) + state.offsetY + nudge,
                       state.weight / 2,
                       0,
