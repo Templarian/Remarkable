@@ -423,12 +423,12 @@
       </div>
       <h2>Offset</h2>
       <div class="slider mb-25">
-        <svg width="24" height="24" viewBox="0 0 24 24"><path d="M4,2H2V22H4V13H18.17L12.67,18.5L14.08,19.92L22,12L14.08,4.08L12.67,5.5L18.17,11H4V2Z" /></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24"><path id="offsetXIcon" d="M4,2H2V22H4V13H18.17L12.67,18.5L14.08,19.92L22,12L14.08,4.08L12.67,5.5L18.17,11H4V2Z" /></svg>
         <input id="offsetX" type="range" min="0" max="100" value="0" />
         <input id="offsetXInput" type="text" value="0" />
       </div>
       <div class="slider">
-        <svg width="24" height="24" viewBox="0 0 24 24"><path d="M22,4V2H2V4H11V18.17L5.5,12.67L4.08,14.08L12,22L19.92,14.08L18.5,12.67L13,18.17V4H22Z" /></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24"><path id="offsetYIcon" d="M22,4V2H2V4H11V18.17L5.5,12.67L4.08,14.08L12,22L19.92,14.08L18.5,12.67L13,18.17V4H22Z" /></svg>
         <input id="offsetY" type="range" min="0" max="100" value="0" />
         <input id="offsetYInput" type="text" value="0" />
       </div>
@@ -459,6 +459,13 @@
   <canvas width="1404" height="1872"></canvas>
   <div id="toolbar" class="toolbar"></div>
   <script>
+    // Icons
+    var mdiGridArrowBottomRight = 'M6 7.41L7.41 6L18 16.59V10H20V20H10V18H16.59L6 7.41M3 3H5V5H3V3M3 7H5V9H3V7M3 11H5V13H3V11M3 15H5V17H3V15M3 19H5V21H3V19M7 3H9V5H7V3M11 3H13V5H11V3M15 3H17V5H15V3M19 3H21V5H19V3Z';
+    var mdiGridArrowBottomLeft = 'M18 7.41L16.59 6L6 16.59V10H4V20H14V18H7.41L18 7.41M21 3H19V5H21V3M21 7H19V9H21V7M21 11H19V13H21V11M21 15H19V17H21V15M21 19H19V21H21V19M17 3H15V5H17V3M13 3H11V5H13V3M9 3H7V5H9V3M5 3H3V5H5V3Z';
+    var mdiGridArrowDown = 'M21 3V5H19V3H21M17 3V5H15V3H17M13 3V5H11V3H13M9 3V5H7V3H9M5 3V5H3V3H5M13 7V17.5L17.5 13L18.92 14.42L12 21.34L5.08 14.42L6.5 13L11 17.5V7H13Z';
+    var mdiGridArrowRight = 'M 3,3.00001L 5,3.00001L 5,5.00001L 3,5.00001L 3,3.00001 Z M 3,7.00001L 5,7.00001L 5,9.00001L 3,9.00001L 3,7.00001 Z M 3,11L 5,11L 5,13L 3,13L 3,11 Z M 3,15L 5,15L 5,17L 3,17L 3,15 Z M 3,19L 5,19L 5,21L 3,21L 3,19 Z M 7,11L 17.5104,11L 13.0052,6.49481L 14.4194,5.08059L 21.3388,12L 14.4194,18.9194L 13.0052,17.5052L 17.5104,13L 7,13L 7,11 Z';
+    var mdiAxisXArrow = 'M1.5,20.5L3,15.03L4.46,17.6L11,13.82V3H13V13.82L22.39,19.25L21.39,21L12,15.56L5.46,19.33L7,21.96L1.5,20.5Z';
+    var mdiAxisYArrow = 'M22.5,20.5L17,21.96L18.53,19.35L12,15.58L2.61,21L1.61,19.27L11,13.85V3H13V13.85L19.53,17.61L21,15.03L22.5,20.5Z';
     // Utils
     var toInt = function(i) { return parseInt(i, 10); };
     // Enums
@@ -671,10 +678,10 @@
           var isoY = Math.round(state.size * 0.6666 * 0.75);
           if (state.vertical !== 'none') {
             var xxWidth = state.size * 0.75;
-            for (var xx = 0; xx < Math.ceil(WIDTH / xxWidth); xx++) {
+            for (var xx = 0; xx < Math.ceil(WIDTH / xxWidth) + 1; xx++) {
               ctx.fillStyle = COLORS[state.vertical];
               ctx.fillRect(
-                Math.ceil(xx * xxWidth - halfWeight) + Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75),
+                Math.ceil(xx * xxWidth - halfWeight) - Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75),
                 0,
                 state.weight,
                 HEIGHT
@@ -688,11 +695,11 @@
                 ctx.beginPath();
                 ctx.moveTo(
                   0,
-                  (y * state.size) - state.offsetY
+                  (y * state.size) + state.offsetX
                 );
                 ctx.lineTo(
                   WIDTH,
-                  (y * state.size) - state.offsetY + Math.round(WIDTH * 0.6666)
+                  (y * state.size) + state.offsetX + Math.round(WIDTH * 0.6666)
                 );
                 ctx.stroke();
               }
@@ -700,11 +707,11 @@
                 ctx.beginPath();
                 ctx.moveTo(
                   0,
-                  (x * state.size) + state.offsetX
+                  (x * state.size) + state.offsetY
                 );
                 ctx.lineTo(
                   WIDTH,
-                  (x * state.size) + state.offsetX + Math.round(WIDTH * -0.6666)
+                  (x * state.size) + state.offsetY + Math.round(WIDTH * -0.6666)
                 );
                 ctx.stroke();
               }
@@ -715,13 +722,13 @@
                   if (state.dot === DOT_SQUARE) {
                     ctx.fillRect(
                       Math.ceil(isoX + (x * isoX * 2)) - halfWeight + state.offsetX,
-                      isoY + (y * isoY * 2) - halfWeight + state.offsetY,
+                      isoY + (y * isoY * 2) - halfWeight + Math.ceil(state.offsetY * 0.75),
                       state.weight,
                       state.weight
                     );
                     ctx.fillRect(
                       Math.ceil(x * isoX * 2) - halfWeight + state.offsetX,
-                      (y * isoY * 2) - halfWeight + state.offsetY,
+                      (y * isoY * 2) - halfWeight + Math.ceil(state.offsetY * 0.75),
                       state.weight,
                       state.weight
                     );
@@ -729,7 +736,7 @@
                     ctx.beginPath();
                     ctx.arc(
                       Math.ceil(isoX + (x * isoX * 2)) + state.offsetX + nudge,
-                      isoY + (y * isoY * 2) + state.offsetY + nudge,
+                      isoY + (y * isoY * 2) + Math.ceil(state.offsetY * 0.75) + nudge,
                       state.weight / 2,
                       0,
                       2 * Math.PI,
@@ -739,7 +746,7 @@
                     ctx.beginPath();
                     ctx.arc(
                       Math.ceil(x * isoX * 2) + state.offsetX + nudge,
-                      (y * isoY * 2) + state.offsetY + nudge,
+                      (y * isoY * 2) + Math.ceil(state.offsetY * 0.75) + nudge,
                       state.weight / 2,
                       0,
                       2 * Math.PI,
@@ -779,10 +786,14 @@
     var baseGrid = document.getElementById('baseGrid');
     var baseIsometric = document.getElementById('baseIsometric');
     var verticalSection = document.getElementById('verticalSection');
+    var offsetXIcon = document.getElementById('offsetXIcon');
+    var offsetYIcon = document.getElementById('offsetYIcon');
     function selectBase(name) {
       baseGrid.classList.toggle('active', name === BASE_GRID);
       baseIsometric.classList.toggle('active', name === BASE_ISOMETRIC);
       verticalSection.classList.toggle('hide', name !== BASE_ISOMETRIC);
+      offsetXIcon.setAttribute('d', name === BASE_GRID ? mdiGridArrowRight : mdiAxisXArrow);
+      offsetYIcon.setAttribute('d', name === BASE_GRID ? mdiGridArrowDown : mdiAxisYArrow);
       state.base = name;
       localStorage.setItem(KEY_BASE, name);
       render();
@@ -835,6 +846,20 @@
         if (state.cross > newCrossMax) {
           cross.value = newCrossMax;
           crossInput.value = newCrossMax;
+          state.cross = i;
+          localStorage.setItem(KEY_CROSS, i);
+        }
+        if (state.offsetX > i) {
+          offsetX.value = i - 1;
+          offsetXInput.value = i - 1;
+          state.offsetX = i - 1;
+          localStorage.setItem(KEY_OFFSETX, i - 1);
+        }
+        if (state.offsetY > i) {
+          offsetY.value = i - 1;
+          offsetYInput.value = i - 1;
+          state.offsetY = i - 1;
+          localStorage.setItem(KEY_OFFSETY, i - 1);
         }
         state.size = i;
         localStorage.setItem(KEY_SIZE, i);
