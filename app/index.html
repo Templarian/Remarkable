@@ -735,8 +735,8 @@
                   } else {
                     ctx.beginPath();
                     ctx.arc(
-                      Math.ceil(isoX + (x * isoX * 2)) + state.offsetX + nudge,
-                      isoY + (y * isoY * 2) + Math.ceil(state.offsetY * 0.75) + nudge,
+                      Math.ceil(isoX + (x * isoX * 2)) - Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75) + nudge,
+                      isoY + (y * isoY * 2) + Math.ceil(state.offsetX * 0.5) + Math.ceil(state.offsetY * 0.75) + nudge,
                       state.weight / 2,
                       0,
                       2 * Math.PI,
@@ -745,8 +745,8 @@
                     ctx.fill();
                     ctx.beginPath();
                     ctx.arc(
-                      Math.ceil(x * isoX * 2) + state.offsetX + nudge,
-                      (y * isoY * 2) + Math.ceil(state.offsetY * 0.75) + nudge,
+                      Math.ceil(x * isoX * 2) + - Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75) + nudge,
+                      (y * isoY * 2) + Math.ceil(state.offsetX * 0.5) + Math.ceil(state.offsetY * 0.75) + nudge,
                       state.weight / 2,
                       0,
                       2 * Math.PI,
