@@ -69,6 +69,29 @@
       height: calc(100vh - 2rem);
       margin-top: 1rem;
     }
+    .download {
+      grid-column: 4;
+      grid-row: 1;
+      align-self: flex-start;
+      justify-content: flex-end;
+      border: 1px solid #FFF;
+      background: #FFF;
+      color: #222;
+      display: inline-flex;
+      border-radius: 0.25rem;
+      text-decoration: none;
+      padding: 0.25rem 0.5rem;
+      justify-self: flex-end;
+      margin: 1.5rem 0.5rem 0 0;
+      box-shadow: 0 1px 0.5rem rgba(0, 0, 0, 0.4);
+      z-index: 1;
+      cursor: pointer;
+    }
+    .download:hover {
+      background: #007bff;
+      color: #FFF;
+      border-color: #007bff;
+    }
     h1 {
       margin: 0;
       padding: 0.75rem 1rem 0.25rem 1rem;
@@ -417,7 +440,7 @@
       </div>
       <h2>Size</h2>
       <div class="slider">
-        <svg width="24" height="24" viewBox="0 0 24 24"><path d="M15,21H17V19H15M19,21H21V19H19M7,21H9V19H7M11,21H13V19H11M19,17H21V15H19M19,13H21V11H19M3,3V21H5V5H21V3M19,9H21V7H19" /></svg>
+        <svg width="24" height="24" viewBox="0 0 24 24"><path id="sizeIcon" d="M15,21H17V19H15M19,21H21V19H19M7,21H9V19H7M11,21H13V19H11M19,17H21V15H19M19,13H21V11H19M3,3V21H5V5H21V3M19,9H21V7H19" /></svg>
         <input id="size" type="range" min="20" max="80" value="40" />
         <input id="sizeInput" type="text" value="40" />
       </div>
@@ -456,10 +479,13 @@
       </div>
     </section>
   </aside>
+  <a id="downloadButton" class="download">Download</a>
   <canvas width="1404" height="1872"></canvas>
   <div id="toolbar" class="toolbar"></div>
   <script>
     // Icons
+    var mdiIsometric = 'M6 1.61L4 2.76L2 1.61L4 .451L6 1.61M10 3.92L8 5.07L6 3.92L8 2.76L10 3.92M20 2.76L18 1.61L20 .451L22 1.61L20 2.76M16 5.07L14 3.92L16 2.76L18 3.92L16 5.07M18 22.39L20 21.23L22 22.39L20 23.54L18 22.39M14 20.08L16 18.92L18 20.08L16 21.23L14 20.08M0 12L12 5.07L24 12L12 18.93L0 12M4 21.24L6 22.39L4 23.54L2 22.39L4 21.24M8 18.93L10 20.08L8 21.23L6 20.08L8 18.93M20 12L12 7.38L4 12L12 16.62L20 12Z';
+    var mdiGrid = 'M15,21H17V19H15M19,21H21V19H19M7,21H9V19H7M11,21H13V19H11M19,17H21V15H19M19,13H21V11H19M3,3V21H5V5H21V3M19,9H21V7H19';
     var mdiGridArrowBottomRight = 'M6 7.41L7.41 6L18 16.59V10H20V20H10V18H16.59L6 7.41M3 3H5V5H3V3M3 7H5V9H3V7M3 11H5V13H3V11M3 15H5V17H3V15M3 19H5V21H3V19M7 3H9V5H7V3M11 3H13V5H11V3M15 3H17V5H15V3M19 3H21V5H19V3Z';
     var mdiGridArrowBottomLeft = 'M18 7.41L16.59 6L6 16.59V10H4V20H14V18H7.41L18 7.41M21 3H19V5H21V3M21 7H19V9H21V7M21 11H19V13H21V11M21 15H19V17H21V15M21 19H19V21H21V19M17 3H15V5H17V3M13 3H11V5H13V3M9 3H7V5H9V3M5 3H3V5H5V3Z';
     var mdiGridArrowDown = 'M21 3V5H19V3H21M17 3V5H15V3H17M13 3V5H11V3H13M9 3V5H7V3H9M5 3V5H3V3H5M13 7V17.5L17.5 13L18.92 14.42L12 21.34L5.08 14.42L6.5 13L11 17.5V7H13Z';
@@ -555,6 +581,12 @@
     var aside = document.getElementsByTagName('aside')[0];
     var canvas = document.getElementsByTagName('canvas')[0];
     const ctx = canvas.getContext('2d');
+    var download = document.getElementById('downloadButton');
+    download.addEventListener('click', () => {
+      var dataURL = canvas.toDataURL('image/png');
+      download.download = 'template.png';
+      download.href = dataURL;
+    });
     // Render with `state`
     function render() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -850,12 +882,14 @@
     var verticalSection = document.getElementById('verticalSection');
     var offsetXIcon = document.getElementById('offsetXIcon');
     var offsetYIcon = document.getElementById('offsetYIcon');
+    var sizeIcon = document.getElementById('sizeIcon');
     function selectBase(name) {
       baseGrid.classList.toggle('active', name === BASE_GRID);
       baseIsometric.classList.toggle('active', name === BASE_ISOMETRIC);
       verticalSection.classList.toggle('hide', name !== BASE_ISOMETRIC);
       offsetXIcon.setAttribute('d', name === BASE_GRID ? mdiGridArrowRight : mdiAxisXArrow);
       offsetYIcon.setAttribute('d', name === BASE_GRID ? mdiGridArrowDown : mdiAxisYArrow);
+      sizeIcon.setAttribute('d', name === BASE_GRID ? mdiGrid : mdiIsometric);
       state.base = name;
       localStorage.setItem(KEY_BASE, name);
       render();
