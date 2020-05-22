@@ -717,18 +717,18 @@
               }
               break;
             case STYLE_DOTS:
-              for (var x = 0; x < Math.ceil((WIDTH / isoX) / 2); x++) {
+              for (var x = 0; x < Math.ceil((WIDTH / isoX) / 2) + 1; x++) {
                 for (var y = 0; y < Math.ceil(HEIGHT / isoY); y++) {
                   if (state.dot === DOT_SQUARE) {
                     ctx.fillRect(
-                      Math.ceil(isoX + (x * isoX * 2)) - halfWeight + state.offsetX,
-                      isoY + (y * isoY * 2) - halfWeight + Math.ceil(state.offsetY * 0.75),
+                      Math.ceil(isoX + (x * isoX * 2)) - halfWeight - Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75),
+                      isoY + (y * isoY * 2) - halfWeight + Math.ceil(state.offsetX * 0.5) + Math.ceil(state.offsetY * 0.75),
                       state.weight,
                       state.weight
                     );
                     ctx.fillRect(
-                      Math.ceil(x * isoX * 2) - halfWeight + state.offsetX,
-                      (y * isoY * 2) - halfWeight + Math.ceil(state.offsetY * 0.75),
+                      Math.ceil(x * isoX * 2) - halfWeight - Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75),
+                      (y * isoY * 2) - halfWeight + Math.ceil(state.offsetX * 0.5) + Math.ceil(state.offsetY * 0.75),
                       state.weight,
                       state.weight
                     );
