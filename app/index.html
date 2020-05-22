@@ -525,12 +525,12 @@
       overlayToolbar: true
     };
     // Get Dashes
+    // Customizing each dash to look the best.
     function getDashes() {
       var w = state.weight;
       var n = w % 2;
       var s = w === 1 || w === 3 || w === 5 ? 1 : 0;
       var d = w === 2 || w === 4 ? 1 : 0;
-      console.log(w, n, s, d)
       var dashes = {
         //                x - n           0
         20: [2 + n, 2, 4 + d, 4 + s, 4 + d, 2, 2, 0],
@@ -758,7 +758,12 @@
               }
               break;
             case STYLE_CROSS:
-              var crossDashes = [state.cross, (state.size - 8) - (2 * state.cross), state.cross, 0];
+              // (state.size - 7.90) = 80
+              // 5.925 = 60
+              // (state.size - 3.95) = 40
+              // ??? what ???
+              var what = 0.09875;
+              var crossDashes = [state.cross, (state.size - (what * state.size)) - (2 * state.cross), state.cross, 0];
               for (var y = Math.ceil(HEIGHT * -1.3333); y < Math.ceil((HEIGHT * 1.6666) / state.size); y++) {
                 ctx.setLineDash(crossDashes);
                 ctx.beginPath();
