@@ -45,6 +45,7 @@
       grid-template-columns: 1fr 20rem 1.5rem auto 1fr;
       font-family: 'Noto Serif', Arial, Helvetica, sans-serif;
       color: #222;
+      overflow: hidden;
     }
     button {
       font-family: 'Noto Serif', Arial, Helvetica, sans-serif;
@@ -61,13 +62,19 @@
       border-radius: 0.25rem;
       padding: 0.5rem 0;
     }
-    canvas {
+    .canvas {
       grid-column: 4;
       grid-row: 1;
       box-shadow: 0 0.0125px 0.5rem rgba(0, 0, 0, 0.3);
       width: auto;
       height: calc(100vh - 2rem);
       margin-top: 1rem;
+    }
+    .magnify {
+      position: absolute;
+      display: none;
+      box-shadow: 0 2px 1rem rgba(0, 0, 0, 0.5);
+      border-radius: 0.25rem;
     }
     .download {
       grid-column: 4;
@@ -479,8 +486,9 @@
       </div>
     </section>
   </aside>
+  <canvas id="magnify" class="magnify" width="100" height="100"></canvas>
   <a id="downloadButton" class="download">Download</a>
-  <canvas width="1404" height="1872"></canvas>
+  <canvas id="canvas" class="canvas" width="1404" height="1872"></canvas>
   <div id="toolbar" class="toolbar"></div>
   <script>
     // Icons
@@ -579,14 +587,10 @@
     }
     // Elements
     var aside = document.getElementsByTagName('aside')[0];
-    var canvas = document.getElementsByTagName('canvas')[0];
+    var canvas = document.getElementById('canvas');
+    var magnify = document.getElementById('magnify');
+    const magnifyCtx = magnify.getContext('2d');
     const ctx = canvas.getContext('2d');
-    var download = document.getElementById('downloadButton');
-    download.addEventListener('click', () => {
-      var dataURL = canvas.toDataURL('image/png');
-      download.download = 'template.png';
-      download.href = dataURL;
-    });
     // Render with `state`
     function render() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -855,6 +859,37 @@
           break;
       }
     }
+    // Magnify
+    canvas.addEventListener("mousemove", function(e){
+      var rect = canvas.getBoundingClientRect();
+      var scale = WIDTH / rect.width;
+      magnifyCtx.fillStyle = '#FFF';
+      magnifyCtx.fillRect(0, 0, 100, 100);
+      magnifyCtx.drawImage(
+        canvas,
+        Math.floor(scale * (e.x - rect.x)) - 20,
+        Math.floor(scale * (e.y - rect.y)) - 20,
+        100,
+        100,
+        0,
+        0,
+        100,
+        100
+      );
+      magnify.style.top = e.pageY + 10 + "px"
+      magnify.style.left = e.pageX + 10 + "px"
+      magnify.style.display = "block";
+    });
+    canvas.addEventListener("mouseleave", function(){
+      magnify.style.display = "none";
+    });
+    // Download
+    var download = document.getElementById('downloadButton');
+    download.addEventListener('click', () => {
+      var dataURL = canvas.toDataURL('image/png');
+      download.download = 'template.png';
+      download.href = dataURL;
+    });
     var canvasRect = canvas.getBoundingClientRect();
     // Colors
     var color = document.getElementById('color');
