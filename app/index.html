@@ -897,6 +897,7 @@
       return document.getElementById('color' + x);
     });
     function selectColor(i) {
+      i = parseInt(i);
       var x = (i % 5) + 1;
       var y = Math.floor(i / 5) + 1;
       color.style.gridColumn = x;
