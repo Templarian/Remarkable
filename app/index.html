@@ -758,8 +758,9 @@
               }
               break;
             case STYLE_CROSS:
+              var crossDashes = [state.cross, (state.size - 8) - (2 * state.cross), state.cross, 0];
               for (var y = Math.ceil(HEIGHT * -1.3333); y < Math.ceil((HEIGHT * 1.6666) / state.size); y++) {
-                ctx.setLineDash([state.cross, 72 - (2 * state.cross), state.cross, 0]);
+                ctx.setLineDash(crossDashes);
                 ctx.beginPath();
                 ctx.moveTo(
                   0,
@@ -772,7 +773,7 @@
                 ctx.stroke();
               }
               for (var x = 0; x < Math.ceil((HEIGHT * 1.6666) / state.size); x++) {
-                ctx.setLineDash([state.cross, 72 - (2 * state.cross), state.cross, 0]);
+                ctx.setLineDash(crossDashes);
                 ctx.beginPath();
                 ctx.moveTo(
                   0,
