@@ -935,7 +935,7 @@
       }
     }
     // Magnify
-    canvas.addEventListener("mousemove", function(e){
+    canvas.addEventListener('mousemove', function(e){
       var rect = canvas.getBoundingClientRect();
       var scale = WIDTH / rect.width;
       var w75 = (rect.width / WIDTH) * WIDTH * 0.75;
@@ -981,12 +981,12 @@
         100,
         100
       );
-      magnify.style.top = e.pageY + offY + "px"
-      magnify.style.left = e.pageX + offX + "px"
-      magnify.style.display = "block";
+      magnify.style.top = e.pageY + offY + 'px';
+      magnify.style.left = e.pageX + offX + 'px';
+      magnify.style.display = 'block';
     });
-    canvas.addEventListener("mouseleave", function(){
-      magnify.style.display = "none";
+    canvas.addEventListener('mouseleave', function(){
+      magnify.style.display = 'none';
     });
     // Download
     var download = document.getElementById('downloadButton');
