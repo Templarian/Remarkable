@@ -41,11 +41,73 @@
       padding: 0;
       margin: 0;
       display: grid;
-      grid-template-rows: auto;
+      grid-template-rows: auto 4rem;
       grid-template-columns: 1fr 20rem 1.5rem auto 1fr;
       font-family: 'Noto Serif', Arial, Helvetica, sans-serif;
       color: #222;
       overflow: hidden;
+    }
+    header {
+      display: grid;
+      grid-template-rows: auto;
+      grid-template-columns: 1fr 1fr;
+      grid-row: 2;
+      grid-column: 1 / span 5;
+      margin: 1rem 0 0 0;
+      box-shadow: 0 0.0125px 0.5rem rgba(0, 0, 0, 0.3);
+      background: #FFF;
+      align-self: stretch;
+    }
+    h1 {
+      grid-row: 1;
+      grid-column: 1;
+      margin: 0;
+      padding: 0;
+      font-weight: 700;
+      font-size: 1.25rem;
+      align-self: center;
+      padding-left: 1rem;
+      height: 3rem;
+    }
+    h1 svg {
+      vertical-align: middle;
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+    .details {
+      grid-row: 1;
+      grid-column: 2;
+      text-align: right;
+      padding-right: 1rem;
+      align-items: center;
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-end;
+      height: 3rem;
+    }
+    .details a {
+      display: inline-flex;
+      color: #222;
+      text-decoration: none;
+      padding: 0.25rem 0.5rem;
+      border: 1px solid #F1F1F1;
+      border-radius: 0.25rem;
+      align-self: center;
+    }
+    .details a:hover {
+      border-color: #CCC;
+      box-shadow: 0 1px 0.5rem rgba(0, 0, 0, 0.2);
+    }
+    .details a:active {
+      border-color: #FFF;
+      box-shadow: 0 1px 0.5rem rgba(0, 0, 0, 0.3) inset;
+    }
+    .details a svg {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+    .mr-sm {
+      margin-right: 0.25rem;
     }
     button {
       font-family: 'Noto Serif', Arial, Helvetica, sans-serif;
@@ -60,14 +122,14 @@
     aside > section {
       box-shadow: 0 0.0125px 0.5rem rgba(0, 0, 0, 0.3);
       border-radius: 0.25rem;
-      padding: 0.5rem 0;
+      padding: 0 0 0.5rem 0;
     }
     .canvas {
       grid-column: 4;
       grid-row: 1;
       box-shadow: 0 0.0125px 0.5rem rgba(0, 0, 0, 0.3);
       width: auto;
-      height: calc(100vh - 2rem);
+      height: calc(100vh - 5rem);
       margin-top: 1rem;
     }
     .magnify {
@@ -99,14 +161,12 @@
       color: #FFF;
       border-color: #007bff;
     }
-    h1 {
-      margin: 0;
-      padding: 0.75rem 1rem 0.25rem 1rem;
-      font-weight: 700;
-      font-size: 1.25rem;
+    .github {
+      position: fixed;
+      top: 0;
+      right: 0;
     }
-    h1 svg {
-      vertical-align: middle;
+    .github svg {
       width: 1.5rem;
       height: 1.5rem;
     }
@@ -396,12 +456,23 @@
 </head>
 
 <body>
+  <header>
+    <h1>
+      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20.71,7.04C20.37,7.38 20.04,7.71 20.03,8.04C20,8.36 20.34,8.69 20.66,9C21.14,9.5 21.61,9.95 21.59,10.44C21.57,10.93 21.06,11.44 20.55,11.94L16.42,16.08L15,14.66L19.25,10.42L18.29,9.46L16.87,10.87L13.12,7.12L16.96,3.29C17.35,2.9 18,2.9 18.37,3.29L20.71,5.63C21.1,6 21.1,6.65 20.71,7.04M3,17.25L12.56,7.68L16.31,11.43L6.75,21H3V17.25Z" /></svg>
+      reMarkable Templates
+    </h1>
+    <div class="details">
+      <a href="https://twitter.com/templarian" title="Twitter @Templarian" class="mr-sm">
+        <svg style="margin-right:0.25rem" viewBox="0 0 24 24"><path fill="currentColor" d="M6,9V4H13V9H23V16H18V21H11V16H1V9H6M16,16H13V19H16V16M8,9H11V6H8V9M6,14V11H3V14H6M18,11V14H21V11H18M13,11V14H16V11H13M8,11V14H11V11H8Z" /></svg>
+        Created by Austin Andrews (@Templarian)
+      </a>
+      <a href="https://github.com/Templarian/Remarkable" title="View on GitHub">
+        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12,2A10,10 0 0,0 2,12C2,16.42 4.87,20.17 8.84,21.5C9.34,21.58 9.5,21.27 9.5,21C9.5,20.77 9.5,20.14 9.5,19.31C6.73,19.91 6.14,17.97 6.14,17.97C5.68,16.81 5.03,16.5 5.03,16.5C4.12,15.88 5.1,15.9 5.1,15.9C6.1,15.97 6.63,16.93 6.63,16.93C7.5,18.45 8.97,18 9.54,17.76C9.63,17.11 9.89,16.67 10.17,16.42C7.95,16.17 5.62,15.31 5.62,11.5C5.62,10.39 6,9.5 6.65,8.79C6.55,8.54 6.2,7.5 6.75,6.15C6.75,6.15 7.59,5.88 9.5,7.17C10.29,6.95 11.15,6.84 12,6.84C12.85,6.84 13.71,6.95 14.5,7.17C16.41,5.88 17.25,6.15 17.25,6.15C17.8,7.5 17.45,8.54 17.35,8.79C18,9.5 18.38,10.39 18.38,11.5C18.38,15.32 16.04,16.16 13.81,16.41C14.17,16.72 14.5,17.33 14.5,18.26C14.5,19.6 14.5,20.68 14.5,21C14.5,21.27 14.66,21.59 15.17,21.5C19.14,20.16 22,16.42 22,12A10,10 0 0,0 12,2Z" /></svg>
+      </a>
+    </div>
+  </header>
   <aside>
     <section>
-      <h1>
-        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M20.71,7.04C20.37,7.38 20.04,7.71 20.03,8.04C20,8.36 20.34,8.69 20.66,9C21.14,9.5 21.61,9.95 21.59,10.44C21.57,10.93 21.06,11.44 20.55,11.94L16.42,16.08L15,14.66L19.25,10.42L18.29,9.46L16.87,10.87L13.12,7.12L16.96,3.29C17.35,2.9 18,2.9 18.37,3.29L20.71,5.63C21.1,6 21.1,6.65 20.71,7.04M3,17.25L12.56,7.68L16.31,11.43L6.75,21H3V17.25Z" /></svg>
-        reMarkable Templates
-      </h1>
       <h2>Base</h2>
       <div class="group">
         <button id="baseGrid">Grid</button>
@@ -534,7 +605,7 @@
     var KEY_OFFSETY = 'offsety';
     var KEY_OFFSETY_DEFAULT = '0';
     var KEY_CROSS = 'cross';
-    var KEY_CROSS_DEFAULT = '2';
+    var KEY_CROSS_DEFAULT = '10';
     var KEY_WEIGHT = 'weight';
     var KEY_WEIGHT_DEFAULT = '2';
     var DOT_SQUARE = 'square';
