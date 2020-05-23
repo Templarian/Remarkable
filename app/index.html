@@ -801,6 +801,7 @@
           ctx.fillStyle = COLORS[colorIndex];
           switch(state.style) {
             case STYLE_LINE:
+              ctx.setLineDash([]);
               for (var y = Math.ceil(HEIGHT * -1.3333); y < Math.ceil((HEIGHT * 1.6666) / state.size); y++) {
                 ctx.beginPath();
                 ctx.moveTo(
@@ -929,8 +930,8 @@
                 ctx.stroke();
               }
               break;
-            }
-          break;
+          }
+        break;
       }
     }
     // Magnify
