@@ -564,6 +564,7 @@
   <a id="downloadButton" class="download">Download</a>
   <canvas id="canvas" class="canvas" width="1404" height="1872"></canvas>
   <div id="toolbar" class="toolbar"></div>
+  <script src="canvas2svg.js"></script>
   <script>
     // Icons
     var mdiIsometric = 'M6 1.61L4 2.76L2 1.61L4 .451L6 1.61M10 3.92L8 5.07L6 3.92L8 2.76L10 3.92M20 2.76L18 1.61L20 .451L22 1.61L20 2.76M16 5.07L14 3.92L16 2.76L18 3.92L16 5.07M18 22.39L20 21.23L22 22.39L20 23.54L18 22.39M14 20.08L16 18.92L18 20.08L16 21.23L14 20.08M0 12L12 5.07L24 12L12 18.93L0 12M4 21.24L6 22.39L4 23.54L2 22.39L4 21.24M8 18.93L10 20.08L8 21.23L6 20.08L8 18.93M20 12L12 7.38L4 12L12 16.62L20 12Z';
@@ -664,14 +665,24 @@
     var canvas = document.getElementById('canvas');
     var magnify = document.getElementById('magnify');
     const magnifyCtx = magnify.getContext('2d');
-    const ctx = canvas.getContext('2d');
+    const ctxSVG = new C2S(WIDTH, HEIGHT);
+	const ctx = canvas.getContext('2d');
     // Render with `state`
     function render() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+	  ctxSVG.clearRect(0, 0, canvas.width, canvas.height);
+	  //white background
+	  ctx.fillStyle = "white";
+	  ctxSVG.fillStyle = "white";
+	  ctx.fillRect(0, 0, canvas.width, canvas.height);
+	  ctxSVG.fillRect(0, 0, canvas.width, canvas.height);
       var colorIndex = parseInt(state.color, 10);
       ctx.fillStyle = COLORS[colorIndex];
+	  ctxSVG.fillStyle = COLORS[colorIndex];
       ctx.strokeStyle = COLORS[colorIndex];
+	  ctxSVG.strokeStyle = COLORS[colorIndex];
       ctx.lineWidth = state.weight;
+	  ctxSVG.lineWidth = state.weight;
       // TODO: offsetX = state.weight / 2
       var nudge = state.weight % 2 ? 0.5 : 0;
       var halfWeight = Math.floor(state.weight / 2);
@@ -686,9 +697,21 @@
                   state.weight,
                   HEIGHT
                 );
+				ctxSVG.fillRect(
+                  (x * state.size) - Math.floor(state.weight / 2) + state.offsetX,
+                  0,
+                  state.weight,
+                  HEIGHT
+                );
               }
               for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
                 ctx.fillRect(
+                  0,
+                  (y * state.size) - Math.floor(state.weight / 2) + state.offsetY,
+                  WIDTH,
+                  state.weight
+                );
+				ctxSVG.fillRect(
                   0,
                   (y * state.size) - Math.floor(state.weight / 2) + state.offsetY,
                   WIDTH,
@@ -706,8 +729,15 @@
                       state.weight,
                       state.weight
                     );
+					ctxSVG.fillRect(
+                      (x * state.size) - Math.floor(state.weight / 2) + state.offsetX,
+                      (y * state.size) - Math.floor(state.weight / 2) + state.offsetY,
+                      state.weight,
+                      state.weight
+                    );
                   } else {
                     ctx.beginPath();
+					ctxSVG.beginPath();
                     ctx.arc(
                       x * state.size + nudge + state.offsetX,
                       y * state.size + nudge + state.offsetY,
@@ -716,7 +746,16 @@
                       2 * Math.PI,
                       false
                     );
+					ctxSVG.arc(
+                      x * state.size + nudge + state.offsetX,
+                      y * state.size + nudge + state.offsetY,
+                      state.weight / 2,
+                      0,
+                      2 * Math.PI,
+                      false
+                    );
                     ctx.fill();
+					ctxSVG.fill();
                   }
                 }
               }
@@ -725,8 +764,14 @@
               var crossSize = (state.cross * 2) + state.weight;
               for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
                 ctx.setLineDash([crossSize, state.size - crossSize]);/*dashes are 5px and spaces are 3px*/
+				ctxSVG.setLineDash([crossSize, state.size - crossSize]);
                 ctx.beginPath();
+				ctxSVG.beginPath();
                 ctx.moveTo(
+                  (x * state.size) + nudge + state.offsetX,
+                  -1 * state.cross - Math.floor(state.weight / 2) + state.offsetY
+                );
+				ctxSVG.moveTo(
                   (x * state.size) + nudge + state.offsetX,
                   -1 * state.cross - Math.floor(state.weight / 2) + state.offsetY
                 );
@@ -734,12 +779,23 @@
                   (x * state.size) + nudge + state.offsetX,
                   HEIGHT
                 );
+				ctxSVG.lineTo(
+                  (x * state.size) + nudge + state.offsetX,
+                  HEIGHT
+                );
                 ctx.stroke();
+				ctxSVG.stroke();
               }
               for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
                 ctx.setLineDash([crossSize, state.size - crossSize]);/*dashes are 5px and spaces are 3px*/
+				ctxSVG.setLineDash([crossSize, state.size - crossSize]);
                 ctx.beginPath();
+				ctxSVG.beginPath();
                 ctx.moveTo(
+                  -1 * state.cross - Math.floor(state.weight / 2) + state.offsetX,
+                  (y * state.size) + nudge + state.offsetY
+                );
+				ctxSVG.moveTo(
                   -1 * state.cross - Math.floor(state.weight / 2) + state.offsetX,
                   (y * state.size) + nudge + state.offsetY
                 );
@@ -747,7 +803,12 @@
                   WIDTH,
                   (y * state.size) + nudge + state.offsetY
                 );
+				ctxSVG.lineTo(
+                  WIDTH,
+                  (y * state.size) + nudge + state.offsetY
+                );
                 ctx.stroke();
+				ctxSVG.stroke();
               }
               break;
             case STYLE_DASHED:
@@ -756,8 +817,14 @@
               var dashes = getDashes();
               for (var x = 0; x < Math.ceil(WIDTH / state.size); x++) {
                 ctx.setLineDash(dashes);
+				ctxSVG.setLineDash(dashes);
                 ctx.beginPath();
+				ctxSVG.beginPath();
                 ctx.moveTo(
+                  x * state.size + state.offsetX + nudge,
+                  state.offsetY - state.size
+                );
+				ctxSVG.moveTo(
                   x * state.size + state.offsetX + nudge,
                   state.offsetY - state.size
                 );
@@ -765,12 +832,23 @@
                   x * state.size + state.offsetX + nudge,
                   HEIGHT
                 );
+				ctxSVG.lineTo(
+                  x * state.size + state.offsetX + nudge,
+                  HEIGHT
+                );
                 ctx.stroke();
+				ctxSVG.stroke();
               }
               for (var y = 0; y < Math.ceil(HEIGHT / state.size); y++) {
                 ctx.setLineDash(dashes);
+				ctxSVG.setLineDash(dashes);
                 ctx.beginPath();
+				ctxSVG.beginPath();
                 ctx.moveTo(
+                  state.offsetX - state.size,
+                  y * state.size + state.offsetY + nudge
+                );
+				ctxSVG.moveTo(
                   state.offsetX - state.size,
                   y * state.size + state.offsetY + nudge
                 );
@@ -778,7 +856,12 @@
                   WIDTH,
                   y * state.size + state.offsetY + nudge
                 );
+				ctxSVG.lineTo(
+                  WIDTH,
+                  y * state.size + state.offsetY + nudge
+                );
                 ctx.stroke();
+				ctxSVG.stroke();
               }
               break;
           }
@@ -790,7 +873,14 @@
             var xxWidth = state.size * 0.75;
             for (var xx = 0; xx < Math.ceil(WIDTH / xxWidth) + 1; xx++) {
               ctx.fillStyle = COLORS[state.vertical];
+			  ctxSVG.fillStyle = COLORS[state.vertical];
               ctx.fillRect(
+                Math.ceil(xx * xxWidth - halfWeight) - Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75),
+                0,
+                state.weight,
+                HEIGHT
+              );
+			  ctxSVG.fillRect(
                 Math.ceil(xx * xxWidth - halfWeight) - Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75),
                 0,
                 state.weight,
@@ -799,12 +889,19 @@
             }
           }
           ctx.fillStyle = COLORS[colorIndex];
+		  ctxSVG.fillStyle = COLORS[colorIndex];
           switch(state.style) {
             case STYLE_LINE:
               ctx.setLineDash([]);
+			  ctxSVG.setLineDash([]);
               for (var y = Math.ceil(HEIGHT * -1.3333); y < Math.ceil((HEIGHT * 1.6666) / state.size); y++) {
                 ctx.beginPath();
+				ctxSVG.beginPath();
                 ctx.moveTo(
+                  0,
+                  (y * state.size) + state.offsetX
+                );
+				ctxSVG.moveTo(
                   0,
                   (y * state.size) + state.offsetX
                 );
@@ -812,11 +909,21 @@
                   WIDTH,
                   (y * state.size) + state.offsetX + Math.round(WIDTH * 0.6666)
                 );
+				ctxSVG.lineTo(
+                  WIDTH,
+                  (y * state.size) + state.offsetX + Math.round(WIDTH * 0.6666)
+                );
                 ctx.stroke();
+				ctxSVG.stroke();
               }
               for (var x = 0; x < Math.ceil((HEIGHT * 1.6666) / state.size); x++) {
                 ctx.beginPath();
+				ctxSVG.beginPath();
                 ctx.moveTo(
+                  0,
+                  (x * state.size) + state.offsetY
+                );
+				ctxSVG.moveTo(
                   0,
                   (x * state.size) + state.offsetY
                 );
@@ -824,7 +931,12 @@
                   WIDTH,
                   (x * state.size) + state.offsetY + Math.round(WIDTH * -0.6666)
                 );
+				ctxSVG.lineTo(
+                  WIDTH,
+                  (x * state.size) + state.offsetY + Math.round(WIDTH * -0.6666)
+                );
                 ctx.stroke();
+				ctxSVG.stroke();
               }
               break;
             case STYLE_DOTS:
@@ -837,7 +949,19 @@
                       state.weight,
                       state.weight
                     );
+					ctxSVG.fillRect(
+                      Math.ceil(isoX + (x * isoX * 2)) - halfWeight - Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75),
+                      isoY + (y * isoY * 2) - halfWeight + Math.ceil(state.offsetX * 0.5) + Math.ceil(state.offsetY * 0.75),
+                      state.weight,
+                      state.weight
+                    );
                     ctx.fillRect(
+                      Math.ceil(x * isoX * 2) - halfWeight - Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75),
+                      (y * isoY * 2) - halfWeight + Math.ceil(state.offsetX * 0.5) + Math.ceil(state.offsetY * 0.75),
+                      state.weight,
+                      state.weight
+                    );
+					ctxSVG.fillRect(
                       Math.ceil(x * isoX * 2) - halfWeight - Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75),
                       (y * isoY * 2) - halfWeight + Math.ceil(state.offsetX * 0.5) + Math.ceil(state.offsetY * 0.75),
                       state.weight,
@@ -845,6 +969,7 @@
                     );
                   } else {
                     ctx.beginPath();
+					ctxSVG.beginPath();
                     ctx.arc(
                       Math.ceil(isoX + (x * isoX * 2)) - Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75) + nudge,
                       isoY + (y * isoY * 2) + Math.ceil(state.offsetX * 0.5) + Math.ceil(state.offsetY * 0.75) + nudge,
@@ -853,8 +978,18 @@
                       2 * Math.PI,
                       false
                     );
+					ctxSVG.arc(
+                      Math.ceil(isoX + (x * isoX * 2)) - Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75) + nudge,
+                      isoY + (y * isoY * 2) + Math.ceil(state.offsetX * 0.5) + Math.ceil(state.offsetY * 0.75) + nudge,
+                      state.weight / 2,
+                      0,
+                      2 * Math.PI,
+                      false
+                    );
                     ctx.fill();
+					ctxSVG.fill();
                     ctx.beginPath();
+					ctxSVG.beginPath();
                     ctx.arc(
                       Math.ceil(x * isoX * 2) + - Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75) + nudge,
                       (y * isoY * 2) + Math.ceil(state.offsetX * 0.5) + Math.ceil(state.offsetY * 0.75) + nudge,
@@ -863,7 +998,16 @@
                       2 * Math.PI,
                       false
                     );
+					ctxSVG.arc(
+                      Math.ceil(x * isoX * 2) + - Math.ceil(state.offsetX * 0.75) + Math.ceil(state.offsetY * 0.75) + nudge,
+                      (y * isoY * 2) + Math.ceil(state.offsetX * 0.5) + Math.ceil(state.offsetY * 0.75) + nudge,
+                      state.weight / 2,
+                      0,
+                      2 * Math.PI,
+                      false
+                    );
                     ctx.fill();
+					ctxSVG.fill();
                   }
                 }
               }
@@ -877,8 +1021,14 @@
               var crossDashes = [state.cross, (state.size - (what * state.size)) - (2 * state.cross), state.cross, 0];
               for (var y = Math.ceil(HEIGHT * -1.3333); y < Math.ceil((HEIGHT * 1.6666) / state.size); y++) {
                 ctx.setLineDash(crossDashes);
+				ctxSVG.setLineDash(crossDashes);
                 ctx.beginPath();
+				ctxSVG.beginPath();
                 ctx.moveTo(
+                  0,
+                  (y * state.size) + state.offsetX
+                );
+				ctxSVG.moveTo(
                   0,
                   (y * state.size) + state.offsetX
                 );
@@ -886,12 +1036,23 @@
                   WIDTH,
                   (y * state.size) + state.offsetX + Math.round(WIDTH * 0.6666)
                 );
+				ctxSVG.lineTo(
+                  WIDTH,
+                  (y * state.size) + state.offsetX + Math.round(WIDTH * 0.6666)
+                );
                 ctx.stroke();
+				ctxSVG.stroke();
               }
               for (var x = 0; x < Math.ceil((HEIGHT * 1.6666) / state.size); x++) {
                 ctx.setLineDash(crossDashes);
+				ctxSVG.setLineDash(crossDashes);
                 ctx.beginPath();
+				ctxSVG.beginPath();
                 ctx.moveTo(
+                  0,
+                  (x * state.size) + state.offsetY
+                );
+				ctxSVG.moveTo(
                   0,
                   (x * state.size) + state.offsetY
                 );
@@ -899,14 +1060,25 @@
                   WIDTH,
                   (x * state.size) + state.offsetY + Math.round(WIDTH * -0.6666)
                 );
+				ctxSVG.lineTo(
+                  WIDTH,
+                  (x * state.size) + state.offsetY + Math.round(WIDTH * -0.6666)
+                );
                 ctx.stroke();
+				ctxSVG.stroke();
               }
               break;
             case STYLE_DASHED:
               for (var y = Math.ceil(HEIGHT * -1.3333); y < Math.ceil((HEIGHT * 1.6666) / state.size); y++) {
                 ctx.setLineDash([10, 10]);
+				ctxSVG.setLineDash([10, 10]);
                 ctx.beginPath();
+				ctxSVG.beginPath();
                 ctx.moveTo(
+                  0,
+                  (y * state.size) + state.offsetX
+                );
+				ctxSVG.moveTo(
                   0,
                   (y * state.size) + state.offsetX
                 );
@@ -914,12 +1086,23 @@
                   WIDTH,
                   (y * state.size) + state.offsetX + Math.round(WIDTH * 0.6666)
                 );
+				ctxSVG.lineTo(
+                  WIDTH,
+                  (y * state.size) + state.offsetX + Math.round(WIDTH * 0.6666)
+                );
                 ctx.stroke();
+				ctxSVG.stroke();
               }
               for (var x = 0; x < Math.ceil((HEIGHT * 1.6666) / state.size); x++) {
                 ctx.setLineDash([10, 10]);
+				ctxSVG.setLineDash([10, 10]);
                 ctx.beginPath();
+				ctxSVG.beginPath();
                 ctx.moveTo(
+                  0,
+                  (x * state.size) + state.offsetY
+                );
+				ctxSVG.moveTo(
                   0,
                   (x * state.size) + state.offsetY
                 );
@@ -927,7 +1110,12 @@
                   WIDTH,
                   (x * state.size) + state.offsetY + Math.round(WIDTH * -0.6666)
                 );
+				ctxSVG.lineTo(
+                  WIDTH,
+                  (x * state.size) + state.offsetY + Math.round(WIDTH * -0.6666)
+                );
                 ctx.stroke();
+				ctxSVG.stroke();
               }
               break;
           }
@@ -991,9 +1179,21 @@
     // Download
     var download = document.getElementById('downloadButton');
     download.addEventListener('click', () => {
+	  //PNG-File
       var dataURL = canvas.toDataURL('image/png');
       download.download = 'template.png';
       download.href = dataURL;
+	  //SVG-File
+	  var text = ctxSVG.getSerializedSvg(true);
+	  text = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + text;
+	  var filename = "template.svg";
+	  var element = document.createElement('a');
+	  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+      element.setAttribute('download', filename);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
     });
     var canvasRect = canvas.getBoundingClientRect();
     // Colors
