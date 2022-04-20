@@ -668,6 +668,9 @@
     // Render with `state`
     function render() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+	  //white background
+	  ctx.fillStyle = "white";
+	  ctx.fillRect(0, 0, canvas.width, canvas.height);
       var colorIndex = parseInt(state.color, 10);
       ctx.fillStyle = COLORS[colorIndex];
       ctx.strokeStyle = COLORS[colorIndex];
